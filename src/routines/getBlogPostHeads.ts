@@ -5,8 +5,7 @@ import {
 } from '@/zodSchemas/BlogPostHeadZodSchema';
 import parseFrontMatter from 'front-matter';
 import { readdir, readFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join, resolve } from 'node:path';
 import { cache } from 'react';
 
 export const getBlogPostHeads = cache(
@@ -17,12 +16,7 @@ export const getBlogPostHeads = cache(
 
     for (const blogPostSlug of blogPostPaths) {
       const file = await readFile(
-        resolve(
-          dirname(fileURLToPath(import.meta.url)),
-          `../blogPosts`,
-          blogPostSlug,
-          'blogPost.mdx',
-        ),
+        resolve(process.cwd() + '/src/blogPosts', blogPostSlug, 'blogPost.mdx'),
       );
 
       const { attributes } = parseFrontMatter(file.toString()) as {
