@@ -28,6 +28,7 @@ let nextConfig = {
   output: 'standalone'
 };
 
+
 if (NODE_ENV === 'production') {
   nextConfig = withSentryConfig(
     nextConfig,

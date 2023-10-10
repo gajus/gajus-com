@@ -11,9 +11,7 @@ import { cache } from 'react';
 
 export const getBlogPostHeads = cache(
   async (): Promise<readonly BlogPostHead[]> => {
-    const blogPostPaths = await readdir(
-      resolve(dirname(fileURLToPath(import.meta.url)), '../blogPosts'),
-    );
+    const blogPostPaths = await readdir(process.cwd() + '/src/blogPosts');
 
     const blogPosts = [];
 
