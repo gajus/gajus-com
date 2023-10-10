@@ -25,6 +25,9 @@ let nextConfig = {
     // We are already running checks using lint:tsc
     ignoreBuildErrors: true,
   },
+  output: {
+    output: 'standalone',
+  }
 };
 
 if (NODE_ENV === 'production') {
