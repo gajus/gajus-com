@@ -9,6 +9,10 @@ pnpm install
 pnpm husky install
 ```
 
+## Motivation
+
+This is an exploration of what is possible with Next.js v13 app/ router.
+
 ## Tech Stack
 
 * [Next.js](https://nextjs.org/)
