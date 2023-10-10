@@ -1,0 +1,65 @@
+{
+  "browserslist": [
+    "defaults and supports es6-module"
+  ],
+  "dependencies": {
+    "bright": "^0.8.4",
+    "front-matter": "^4.0.2",
+    "mdx-bundler": "^9.2.1",
+    "next": "13.5.4",
+    "next-safe-action": "^4.0.1",
+    "react": "^18",
+    "react-animated-heart": "^0.0.8",
+    "react-dom": "^18",
+    "rehype-slug": "^5.1.0",
+    "remark-gfm": "^3.0.1",
+    "rss": "^1.2.2",
+    "schema-dts": "^1.1.2",
+    "slonik": "^37.0.1",
+    "slonik-interceptor-query-logging": "^1.4.7",
+    "xml2js": "^0.6.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@pandacss/dev": "^0.15.5",
+    "@playwright/test": "^1.38.1",
+    "@sentry/nextjs": "^7.73.0",
+    "@sentry/profiling-node": "^1.2.1",
+    "@types/mdx": "^2.0.8",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/rss": "^0.0.30",
+    "@types/xml2js": "^0.4.12",
+    "concurrently": "^8.2.1",
+    "cspell": "^7.3.7",
+    "eslint": "^8.51.0",
+    "eslint-config-canonical": "^41.3.0",
+    "eslint-config-next": "13.5.4",
+    "husky": "^8.0.3",
+    "knip": "^2.33.0",
+    "typescript": "^5",
+    "vitest": "^0.34.6"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "pg@8.11.3": "patches/pg@8.11.3.patch"
+    }
+  },
+  "name": "gajus-blog",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "prepare": "panda codegen",
+    "start": "next start",
+    "test": "concurrently \"npm:test:*\"",
+    "test:cspell": "cspell lint --no-progress .",
+    "test:eslint": "eslint",
+    "test:knip": "knip",
+    "test:playwright": "playwright test",
+    "test:tsc": "tsc --noEmit",
+    "test:vitest": "vitest run"
+  },
+  "version": "0.0.0"
+}

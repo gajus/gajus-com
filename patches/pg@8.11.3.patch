@@ -1,0 +1,26 @@
+diff --git a/lib/native/client.js b/lib/native/client.js
+index 6fb2e06089da9d2219bd86aa74a12d577654dd98..9dcc2bb58ad7416f0fa668ab59c0a7d03b75727c 100644
+--- a/lib/native/client.js
++++ b/lib/native/client.js
+@@ -2,12 +2,15 @@
+ 
+ // eslint-disable-next-line
+ var Native
+-try {
+-  // Wrap this `require()` in a try-catch to avoid upstream bundlers from complaining that this might not be available since it is an optional import
+-  Native = require('pg-native')
+-} catch (e) {
+-  throw e
+-}
++// We have commented out the following code because we are not using
++// pg-native and it is causing warnings in Next.js builds.
++//
++// try {
++//   // Wrap this `require()` in a try-catch to avoid upstream bundlers from complaining that this might not be available since it is an optional import
++//   Native = require('pg-native')
++// } catch (e) {
++//   throw e
++// }
+ var TypeOverrides = require('../type-overrides')
+ var EventEmitter = require('events').EventEmitter
+ var util = require('util')

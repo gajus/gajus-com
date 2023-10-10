@@ -1,0 +1,12 @@
+**/*.log
+**/*.tsbuildinfo
+**/.*
+/dist
+/node_modules
+/styled-system
+!/.eslintrc.json
+!/.github
+!/.gitignore
+!/.husky
+!/.vscode
+!/pnpm-lock.yaml

@@ -1,0 +1,334 @@
+---
+description: In the world of Node.js development, the combination of Fastify, a high-performance web framework, and Slonik, a robust SQL query builder and executor, offers an enticing proposition.
+guid: 018b16ed-d388-78c9-817c-d5994d5578aa
+publishedAt: 2023-09-30T12:55:58.178Z
+tags: [fastify, slonik, postgresql, sql, nodejs, typescript]
+title: "Integrating Fastify with Slonik"
+---
+For those unfamiliar, [Slonik](https://github.com/gajus/slonik) is a robust SQL query building and execution library designed for Node.js. Its primary purpose is to provide a safe and convenient way to compose and execute SQL queries. Now, let's delve into how it works in conjunction with [Fastify](https://www.fastify.io/), a high-performance web framework for Node.js.
+
+## Install the Required Packages
+
+To get started, you'll need to install the necessary packages:
+
+```bash
+npm install slonik fastify
+```
+
+## Basic App Setup
+
+Let's create a basic Fastify app:
+
+```ts
+import fastify from 'fastify';
+
+const app = fastify({ logger: true });
+const port = 3000;
+
+app.get('/', async (request, reply) => {
+  reply.send({ message: 'Hello, World!' });
+});
+
+app.listen(port, (err, address) => {
+  if (err) {
+    app.log.error(err);
+    process.exit(1);
+  }
+  app.log.info(`Server listening on ${address}`);
+});
+```
+
+Running this app will start a server on port 3000. If you visit http://localhost:3000, you should see the message "Hello, World!".
+
+## Connecting to a Database
+
+Slonik handles database connections using [connection pools](https://github.com/gajus/slonik#user-content-slonik-usage-create-connection). A connection pool efficiently manages a set of database connections, minimizing the overhead of creating new connections.
+
+Here is an example of how to create a Slonik connection pool:
+
+```ts
+import { createPool } from 'slonik';
+
+const main = async () => {
+  await createPool('postgres://...');
+};
+
+main();
+```
+
+> **Note:** Replace `'postgres://...'` with your actual [connection URI](https://github.com/gajus/slonik#user-content-slonik-usage-connection-uri).
+
+You may have noticed that we are awaiting the result of `createPool`. Slonik queries the database during the connection pool setup, requiring us to modify our app slightly.
+
+## Using Slonik with Fastify
+
+Let's see how to use Slonik with Fastify:
+
+```ts
+import fastify from 'fastify';
+import { createPool } from 'slonik';
+
+const main = async () => {
+  const pool = await createPool('postgres://...');
+
+  const app = fastify({ logger: true });
+  const port = 3000;
+
+  app.get('/', async (request, reply) => {
+    reply.send({ message: 'Hello, World!' });
+  });
+
+  app.listen(port, (err, address) => {
+    if (err) {
+      app.log.error(err);
+      process.exit(1);
+    }
+    app.log.info(`Server listening on ${address}`);
+  });
+};
+
+void main();
+```
+
+We've made a few adjustments to our app. First, we created a connection pool using the `createPool` function. Then, we added a `main` function that creates the connection pool and starts the Fastify server. This wrapping of the code in a function is necessary because we need to `await` the `createPool` function, and you can't use `await` at the top level.
+
+## Integrating Slonik with a Fastify Route
+
+With the connection pool in place, it's straightforward to execute queries within your Fastify routes:
+
+```typescript
+app.get('/users', async (request, reply) => {
+  const users = await pool.any(sql.unsafe`SELECT * FROM users`);
+
+  reply.send(users);
+});
+```
+
+Here, we're fetching all users from the database and sending them as a JSON response.
+
+Thanks to the connection pool, you don't need to worry about opening and closing connections manually. Slonik handles this for you. For most use cases, this is the recommended way to execute queries. However, if you need more control over the connection, you can explore the [`transaction`](https://github.com/gajus/slonik#transaction) or [`connect`](https://github.com/gajus/slonik#slonik-usage-create-connection) methods.
+
+## Transactions
+
+Slonik provides a [`transaction`](https://github.com/gajus/slonik#transaction) method that allows you to execute queries within the same connection and a single transaction:
+
+```typescript
+await pool.connect(async (connection) => {
+  await connection.query(sql.unsafe`INSERT INTO logs (message) VALUES ('foo')`);
+  await connection.query(sql.unsafe`INSERT INTO logs (message) VALUES ('bar')`);
+});
+```
+
+With this, both insertions either succeed together or fail together.
+
+## Using Transactions with Fastify
+
+Let's see how we can use transactions with Fastify. First, we'll create a route that inserts a user into the database:
+
+```typescript
+app.post('/users', async (request, reply) => {
+  const { name } = request.body;
+
+  await pool.query(sql.unsafe`INSERT INTO users (name) VALUES (${name})`);
+
+  reply.send({ message: 'User created!' });
+});
+```
+
+If it's just a single query, you don't need to use a transaction. However, let's say we want to log the creation of the user in the database:
+
+```typescript
+app.post('/users', async (request, reply) => {
+  const { name } = request.body;
+
+  await pool.transaction(async (transaction) => {
+    await transaction.query(sql.unsafe`INSERT INTO users (name) VALUES (${name})`);
+    await transaction.query(sql.unsafe`INSERT INTO logs (message) VALUES (${name} was created!)`);
+  });
+
+  reply.send({ message: 'User created!' });
+});
+```
+
+Here, we're using the [`transaction`](https://github.com/gajus/slonik#user-content-slonik-query-methods-transaction) method to execute two queries within the same connection and a single transaction. This ensures that both queries either succeed together or fail together. If either query fails, the transaction is rolled back, and an error is thrown.
+
+## Optimizing Transactions
+
+This section is tangential to the main topic of this article, but it's important to mention.
+
+One key principle when working with transactions in relational databases is to keep them as concise as possible. Transactions that extend for long durations can lead to various issues.
+
+Extended transaction durations can block other operations, increasing contention for resources. This can escalate to more severe problems such as [deadlocks](https://en.wikipedia.org/wiki/Deadlock). In a deadlock scenario, two or more transactions wait indefinitely for each other to release locks.
+
+Such problems can significantly degrade the system's performance. In situations with high concurrency, bottlenecks can emerge, hampering the smooth operation of the database.
+
+Moreover, there's a risk of long-running transactions exhausting connection pool resources. When this happens, it can result in application slowdowns as different parts of the application queue up, waiting for available connections.
+
+In light of these potential pitfalls, it's crucial to ensure that transactions are designed to encompass only the necessary operations. They should be optimized for both speed and efficiency. By adhering to these principles, you maintain the transaction's integrity while ensuring the responsiveness and scalability of the broader application and database system.
+
+In short, keep your transactions short and focused.
+
+## Reserving a
+
+ Connection
+
+> **Warning:** Reserving a connection from the pool is an advanced feature. It's recommended to use transactions instead.
+
+The [`connect`](https://github.com/gajus/slonik#slonik-usage-create-connection) method allows you to reserve a connection from the pool and execute queries on it.
+
+It's important to note that this is a rare use case, especially in the context of services that produce responses to user requests. Most of the time, you should use connections from the connection pool or transactions instead. However, there are cases where you may need to reserve a connection from the pool. For example, you may want to set the time zone for the connection:
+
+```typescript
+app.get('/events', async (request, reply) => {
+  const events = await pool.connect(async (connection) => {
+    await connection.query(sql.unsafe`SET LOCAL timezone = 'America/New_York'`);
+
+    return await connection.any(sql.unsafe`SELECT event_name, event_time FROM events`);
+  });
+
+  reply.send(events);
+});
+```
+
+Here, we are reserving a connection from the pool and executing two queries on it. The first query sets the time zone for the connection, and the second query fetches all events from the database. Once the connection is released, it returns to the pool.
+
+## Passing a Connection to a Function
+
+A common question I am asked is how to pass a connection to a function. For example, let's say you have a function that fetches all users from the database:
+
+```typescript
+const getUsers = async () => {
+  return await connection.any(sql.unsafe`SELECT * FROM users`);
+};
+
+app.get('/users', async (request, reply) => {
+  const users = await getUsers();
+
+  reply.send(users);
+});
+```
+
+The simple solution is to pass the connection as an argument:
+
+```typescript
+const getUsers = async (pool) => {
+  return await pool.any(sql.unsafe`SELECT * FROM users`);
+};
+
+app.get('/users', async (request, reply) => {
+  const users = await getUsers(pool);
+
+  reply.send(users);
+});
+```
+
+I realize that this is a very simple example, but this principle holds even if your function requiring access to the database handle is nested deep within a call stack. You must pass an instance of the connection pool down to every function in the chain.
+
+## Anti-Patterns: AsyncLocalStorage
+
+[`AsyncLocalStorage`](https://nodejs.org/api/async_context.html#class-asynclocalstorage) is a core module introduced in Node.js that provides a mechanism to store and retrieve data based on the current execution context. It might be tempting to use this to pass a connection to a function:
+
+```typescript
+import fastify from 'fastify';
+import { createPool } from 'slonik';
+import { AsyncLocalStorage } from 'async_hooks';
+
+const asyncLocalStorage = new AsyncLocalStorage();
+
+const main = async () => {
+  const pool = createPool('postgres://...');
+
+  const app = fastify({ logger: true });
+  const port = 3000;
+
+  app.decorate('pool', pool);
+
+  app.addHook('onRequest', (request, reply, done) => {
+    pool.connect((err, connection) => {
+      if (err) {
+        return done(err);
+      }
+      asyncLocalStorage.run({ connection }, done);
+    });
+  });
+
+  app.get('/users', async (request, reply) => {
+    const connection = asyncLocalStorage.getStore().connection;
+    const users = await connection.any(sql.unsafe`SELECT * FROM users`);
+    reply.send(users);
+  });
+
+  app.listen(port, (err, address) => {
+    if (err) {
+      app.log.error(err);
+      process.exit(1);
+    }
+    app.log.info(`Server listening on ${address}`);
+  });
+};
+
+void main();
+```
+
+I strongly recommend against this approach. It's not a good idea in terms of performance and design. If you need to pass a connection to a function, you should pass it as an argument.
+
+Refer to the [Passing a Connection to a Function](#passing-a-connection-to-a-function) section for more information.
+
+## Anti-Patterns: Wrapping the Entire Request in a Transaction
+
+Another anti-pattern I see is wrapping the entire request in a transaction:
+
+```typescript
+app.post('/users', async (request, reply) => {
+  await pool.transaction(async (transaction) => {
+    // Do something that is part of the request but not part of the transaction
+    await foo();
+
+    await transaction.query(sql.unsafe`INSERT INTO users (name) VALUES ('foo')`);
+
+    reply.send(
+      await transaction.one(sql.unsafe`SELECT * FROM users WHERE name = 'foo'`)
+    );
+  });
+});
+```
+
+This is not a good idea. Transactions should be as short as possible. If you need to perform something that is not part of the transaction, you should do it outside of the transaction.
+
+```typescript
+app.post('/users', async (request, reply) => {
+  await foo();
+
+  await pool.transaction(async (transaction) => {
+    await transaction.query(sql.unsafe`INSERT INTO users (name) VALUES ('foo')`);
+
+    reply.send(
+      await transaction.one(sql.unsafe`SELECT * FROM users WHERE name = 'foo'`)
+    );
+  });
+});
+```
+
+Refer to the [Optimizing Transactions](#optimizing-transactions) section for more information.
+
+## Anti-Patterns: Wrapping the Entire Request in a Connection
+
+Another anti-pattern I see is wrapping the entire request in a connection:
+
+```typescript
+app.post('/users', async (request, reply) => {
+  await pool.connect(async (connection) => {
+    reply.send(await foo());
+  });
+});
+```
+
+This is not a good idea. Implementing this pattern means that your application will be able to handle only as many concurrent requests as there are connections in the connection pool. If you have a connection pool with 10 connections, your application will be able to handle only 10 concurrent requests.
+
+Instead, you should pass an instance of the connection pool to the function that needs access to the database handle and use the connection pool to execute queries and transactions.
+
+Refer to the [Passing a Connection to a Function](#passing-a-connection-to-a-function) section for more information.
+
+## Conclusion
+
+By now, you should have a solid understanding of how to integrate Slonik with Fastify in TypeScript. If you have any questions, feel free to reach out to me on [Twitter](https://twitter.com/kuizinas) or leave an issue on [GitHub](https://github.com/gajus/slonik).

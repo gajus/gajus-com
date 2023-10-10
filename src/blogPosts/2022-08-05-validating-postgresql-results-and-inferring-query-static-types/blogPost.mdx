@@ -1,0 +1,157 @@
+---
+description: >-
+  Most of the bugs come from misaligned expectations. When working with
+  databases, the first line of defense is to type the expected query results
+  statically.
+guid: 018b17d3-8770-7707-bd18-3465a6488355
+publishedAt: 2023-08-05T11:52:58.178Z
+tags: [fastify, slonik, postgresql, sql, nodejs, typescript]
+title: Validating PostgreSQL results & inferring query static types
+---
+
+Most of the bugs come from misaligned expectations. When working with databases, the first line of defense is to type the expected query results statically.
+
+```ts
+type SubscriptionPayment = {
+  id: number,
+  subscriber: string,
+  amount: number
+};
+
+await connection.many(
+  sql<Person>`
+    SELECT id, subscriber, amount
+    FROM subscription_payment
+  `
+);
+```
+
+Doing this already improves the developer experience greatly because now we can make assumptions about the query results without even looking at the query.
+
+We might even have integration tests that further validate that the query is returning the expected results (at least at the build time).
+
+However, the problem is that once you deploy the application, the database schema might change independently of the codebase. This drift may result in your application behaving in unpredictable and potentially dangerous ways, e.g., imagine if the amount column type changed from numeric to text. 
+
+Without the runtime validation, this would cause a cascade of problems and potential database corruption. Even worse, without runtime checks, this could go unnoticed for a long time.
+
+In contrast, by using runtime checks, you can ensure that the contract between your codebase and the database is always respected. If there is a breaking change, the application fails with a loud error that is easy to debug and fix.
+Up to now, there was not a simple way to add runtime validation to database queries.
+
+However, thanks to [zod](https://www.npmjs.com/package/zod), a schema validation and static type interference library, and [Slonik](https://github.com/gajus/slonik), we can now have the best of both worlds by writing just a single schema per query and getting static types and runtime result validation.
+
+If you are familiar with JavaScript ecosystem, what Relay is to React.js/GraphQL, Slonik is to Node.js/PostgreSQL.
+Here is how it works.
+
+Let's assume that you have a PostgreSQL table person:
+
+```sql
+CREATE TABLE "public"."person"(
+  "id" integer GENERATED ALWAYS AS IDENTITY,
+  "name" text NOT NULL,
+  PRIMARY KEY ("id")
+);
+```
+
+and you want to retrieve all persons in the database, along with their id and name:
+
+```ts
+connection.any(sql`
+  SELECT id, name
+  FROM person
+`);
+```
+
+With your knowledge of the database schema, define a zod object:
+
+```ts
+const personObject = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+```
+
+Update your query to use sql.type tag and pass personObject:
+
+```ts
+const personQuery = sql.type(personObject)`
+  SELECT id, name
+  FROM person
+`;
+```
+
+Finally, query the database using typed sql tagged template:
+
+```ts
+const persons = await connection.any(personQuery);
+```
+
+With this information, [Slonik](https://github.com/gajus/slonik) guarantees that every member of persons is an object that has properties id and name, which are a non-null number and a non-null string respectively.
+
+### Handling schema validation errors
+
+If query produces a row that does not satisfy zod object, then `SchemaValidationError` error is thrown.
+`SchemaValidationError` includes properties that describe the query and validation errors:
+
+* `sql` – SQL of the query that produced unexpected row.
+* `row` – row data that did not satisfy the schema.
+* `issues` – array of unmet expectations.
+
+Whenever this error occurs, the same information is also included in the logs.
+
+In most cases, you shouldn't attempt to handle these errors at individual query level – allow to propagate to the top of the application and fix the issue when you become aware of it.
+
+
+However, in cases such as dealing with unstructured data, it might be useful to handle these errors at a query level, e.g.
+
+```ts
+import { SchemaValidationError } from 'slonik';
+
+try {} catch(error) {
+  if (errorextendsSchemaValidationError) {
+    // Handle scheme validation error
+  }
+}
+```
+
+### Performance penalty
+
+In the context of the network overhead, validation accounts for a tiny amount of the total execution time.Just to give an idea, in our sample of data, it takes sub 0.1ms to validate 1 row, ~3ms to validate 1,000 and ~25ms to validate 100,000 rows.
+
+### Unknown keys
+
+Slonik disallows unknown keys, i.e. query that returns `{foo: 'bar', baz: 'qux'}` with `z.object({foo: z.string()})` schema will produce `SchemaValidationError` error.
+
+### Inferring types
+
+You can infer TypeScript type of the query result. There are couple of ways of doing it:
+
+```ts
+// Infer using z.infer<typeof yourSchema>
+// https://github.com/colinhacks/zod#type-inference
+type Person = z.infer<typeof personObject>;
+
+// from sql tagged template `zodObject` property 
+type Person = z.infer<personQuery.zodObject>;
+```
+
+### Transforming results
+
+Using zod transform you can refine the result shape and its type, e.g.
+
+```ts
+const coordinatesType = z.string().transform((subject) => {  
+  const [x,y] = subject.split(',');
+  return{x:Number(x),y:Number(y)};
+});
+
+const zodObject = z.object({foo:coordinatesType});
+const query = sql.type(zodObject)`SELECT '1,2' as foo`;
+const result = await pool.one(query);
+expectTypeOf(result).toMatchTypeOf<{foo:{x:number,y:number}}>();
+
+t.deepEqual(result,{foo:{x:1,y:2}});
+```
+
+### What's next?
+
+Now that we have a framework for instrumenting queries, the next step is automate schema and type generation as much as possible. For that, check out the work that mmkal has been doing in https://www.npmjs.com/package/@slonik/typegen
