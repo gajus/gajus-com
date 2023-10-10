@@ -17,6 +17,7 @@ version: '0.2'
 words:
   - fastify
   - gajus
+  - isready
   - kuizinas
   - nextjs
   - pandacss
