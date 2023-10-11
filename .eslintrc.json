@@ -31,6 +31,10 @@
             ],
             "message": "Use @/routines/connectToPostgres.",
             "name": "slonik"
+          },
+          {
+            "message": "Use @/components/Link.",
+            "name": "next/link"
           }
         ]
       }
