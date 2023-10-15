@@ -7,8 +7,8 @@ import { Center } from '@/styles';
 import { useCallback, useState, useTransition } from 'react';
 
 export const BlogPostReactions = ({
-  slug,
   liked: initialLiked,
+  slug,
 }: {
   readonly liked: boolean;
   readonly slug: string;

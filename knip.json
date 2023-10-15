@@ -8,11 +8,11 @@
     "**/__generated__/**/*",
     "**/*.d.ts"
   ],
-  "project": [
-    "src/**/*"
-  ],
   "ignoreDependencies": [
     "husky",
     "eslint-config-next"
+  ],
+  "project": [
+    "src/**/*"
   ]
 }

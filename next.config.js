@@ -9,6 +9,10 @@ let nextConfig = {
     // We are already running checks using lint:eslint
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    serverActions: true,
+  },
+  output: 'standalone',
   redirects: async () => {
     return [
       {
@@ -18,16 +22,11 @@ let nextConfig = {
       },
     ];
   },
-  experimental: {
-    serverActions: true,
-  },
   typescript: {
     // We are already running checks using lint:tsc
     ignoreBuildErrors: true,
   },
-  output: 'standalone'
 };
-
 
 if (NODE_ENV === 'production') {
   nextConfig = withSentryConfig(

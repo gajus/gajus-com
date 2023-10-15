@@ -21,31 +21,31 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@pandacss/dev": "^0.15.5",
-    "@playwright/test": "^1.38.1",
-    "@sentry/nextjs": "^7.73.0",
+    "@pandacss/dev": "^0.16.0",
+    "@playwright/test": "^1.39.0",
+    "@sentry/nextjs": "^7.74.0",
     "@types/mdx": "^2.0.8",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/node": "^20.8.6",
+    "@types/react": "^18.2.28",
+    "@types/react-dom": "^18.2.13",
     "@types/rss": "^0.0.30",
     "@types/xml2js": "^0.4.12",
     "concurrently": "^8.2.1",
-    "cspell": "^7.3.7",
+    "cspell": "^7.3.8",
     "eslint": "^8.51.0",
-    "eslint-config-canonical": "^41.3.0",
+    "eslint-config-canonical": "^42.0.1",
     "eslint-config-next": "13.5.4",
     "husky": "^8.0.3",
-    "knip": "^2.33.0",
+    "knip": "^2.33.3",
     "typescript": "^5",
     "vitest": "^0.34.6"
   },
+  "name": "gajus-blog",
   "pnpm": {
     "patchedDependencies": {
       "pg@8.11.3": "patches/pg@8.11.3.patch"
     }
   },
-  "name": "gajus-blog",
   "private": true,
   "scripts": {
     "build": "next build",

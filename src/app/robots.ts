@@ -1,6 +1,6 @@
 import { type MetadataRoute } from 'next';
 
-export default function robots(): MetadataRoute.Robots {
+export default (): MetadataRoute.Robots => {
   return {
     rules: [
       {
@@ -10,4 +10,4 @@ export default function robots(): MetadataRoute.Robots {
     ],
     sitemap: 'https://gajus.com/sitemap.xml',
   };
-}
+};
