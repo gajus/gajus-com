@@ -8,7 +8,7 @@ import { connectToPostgres, sql } from '@/routines/connectToPostgres';
 import { findBlogPostHead } from '@/routines/findBlogPostHead';
 import { getBlogPostBody } from '@/routines/getBlogPostBody';
 import { getClientIpAddress } from '@/routines/getClientIpAddress';
-import { css } from '@/styles';
+import { css, styled } from '@/styles';
 import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
@@ -26,6 +26,13 @@ const hasLikedBlogPost = cache(
   `);
   },
 );
+
+const PublicationDate = styled('time', {
+  base: {
+    color: 'action-100',
+    fontWeight: '700',
+  },
+});
 
 type Props = {
   params: { blogPostSlug: string };
@@ -66,6 +73,9 @@ export default async ({ params: { blogPostSlug } }: Props) => {
 
   return (
     <SiteLayout>
+      <PublicationDate dateTime={blogPostHead.publishedAt.toISOString()}>
+        {blogPostHead.publishedAt.toDateString()}
+      </PublicationDate>
       <PageTitle>{blogPostHead.title}</PageTitle>
 
       <div
