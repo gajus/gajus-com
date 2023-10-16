@@ -1,11 +1,20 @@
-import { Prose } from './Prose';
 import { Link } from '@/components/Link';
 import { css } from '@/styles';
 import { omit } from '@/utilities/omit';
+import { type BlogPostHead } from '@/zodSchemas/BlogPostHeadZodSchema';
 import { Code } from 'bright';
 import { type MDXComponents } from 'mdx/types';
-import { getMDXComponent } from 'mdx-bundler/client';
-import { useMemo } from 'react';
+import { compileMDX } from 'next-mdx-remote/rsc';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { cache, type JSXElementConstructor, type ReactElement } from 'react';
+import rehypeSlug from 'rehype-slug';
+import remarkGfm from 'remark-gfm';
+
+type BlogPostBody = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  content: ReactElement<any, string | JSXElementConstructor<any>>;
+};
 
 const anchorLink = css({
   marginLeft: '-8px',
@@ -82,14 +91,30 @@ const mdxComponents: MDXComponents = {
   },
 };
 
-export const BlogPostBody = ({ code }: { readonly code: string }) => {
-  const MDXContent = useMemo(() => getMDXComponent(code), [code]);
+export const getBlogPostBody = cache(
+  async (blogPostHead: BlogPostHead): Promise<BlogPostBody> => {
+    const blogPostPath = resolve(
+      process.cwd() + '/src/blogPosts',
+      `../blogPosts/`,
+      blogPostHead.source,
+    );
 
-  return (
-    <div id="blog-post-body">
-      <Prose>
-        <MDXContent components={mdxComponents} />
-      </Prose>
-    </div>
-  );
-};
+    const blogPostRaw = await readFile(blogPostPath, 'utf8');
+
+    const { content } = await compileMDX({
+      components: mdxComponents,
+      options: {
+        mdxOptions: {
+          rehypePlugins: [rehypeSlug],
+          remarkPlugins: [remarkGfm],
+        },
+        parseFrontmatter: true,
+      },
+      source: blogPostRaw,
+    });
+
+    return {
+      content,
+    };
+  },
+);

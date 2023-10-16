@@ -16,6 +16,7 @@ language: en
 version: '0.2'
 words:
   - fastify
+  - frontmatter
   - gajus
   - isready
   - kuizinas

@@ -1,8 +1,8 @@
-import { BlogPostBody } from '@/components/BlogPostBody';
 import { BlogPostingJsonLd } from '@/components/BlogPostingJsonLd';
 import { BlogPostReactions } from '@/components/BlogPostReactions';
 import { Comments } from '@/components/Comments';
 import { PageTitle } from '@/components/PageTitle';
+import { Prose } from '@/components/Prose';
 import { SiteLayout } from '@/components/SiteLayout';
 import { connectToPostgres, sql } from '@/routines/connectToPostgres';
 import { findBlogPostHead } from '@/routines/findBlogPostHead';
@@ -83,7 +83,9 @@ export default async ({ params: { blogPostSlug } }: Props) => {
           marginY: '16px',
         })}
       >
-        <BlogPostBody code={blogPostBody.code} />
+        <div id="blog-post-body">
+          <Prose>{blogPostBody.content}</Prose>
+        </div>
       </div>
 
       <BlogPostReactions

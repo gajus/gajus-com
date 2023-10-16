@@ -5,8 +5,8 @@
   "dependencies": {
     "bright": "^0.8.4",
     "front-matter": "^4.0.2",
-    "mdx-bundler": "^9.2.1",
     "next": "13.5.4",
+    "next-mdx-remote": "^4.4.1",
     "next-safe-action": "^4.0.1",
     "react": "^18",
     "react-animated-heart": "^0.0.8",
