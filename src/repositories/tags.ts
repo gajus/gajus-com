@@ -25,6 +25,10 @@ export const tags: Record<string, Tag> = {
     name: 'JavaScript',
     slug: 'javascript',
   },
+  miscellaneous: {
+    name: 'Miscellaneous',
+    slug: 'miscellaneous',
+  },
   nodejs: {
     name: 'Node.js',
     slug: 'nodejs',

@@ -41,13 +41,19 @@ export const Prose = ({ children }: PropsWithChildren) => {
         '& > h4': {
           fontSize: 'x3',
         },
-        '& [data-rehype-pretty-code-fragment]': {
-          background: '#F8FAFE',
+        '& [data-rehype-pretty-code-fragment] > pre': {
+          background: '#eee',
           borderRadius: '8px',
           fontFamily: 'monospace',
           fontSize: '18px',
           lineHeight: '24px',
           padding: '16px',
+        },
+        '& [data-rehype-pretty-code-fragment] [data-highlighted-chars]': {
+          background: 'rgba(255, 255, 0, 0.5)',
+        },
+        '& [data-rehype-pretty-code-fragment] [data-highlighted-line]': {
+          background: 'rgba(255, 255, 0, 0.5)',
         },
         '& kbd': {
           background: 'code-background-100',
@@ -62,7 +68,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
         },
         '& p, & li, & h2, & h3, & h4': {
           '& > code': {
-            background: '#F8FAFE',
+            background: '#eee',
             borderRadius: '8px',
             fontFamily: 'monospace',
             padding: '8px',
