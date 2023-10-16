@@ -43,6 +43,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
           fontFamily: 'monospace',
           fontSize: '18px',
           lineHeight: '24px',
+          overflowX: 'scroll',
           paddingY: '16px',
         },
         '& [data-rehype-pretty-code-fragment] [data-highlighted-chars]': {

@@ -16,6 +16,10 @@ const Main = styled(Stack, {
 
 const FooterLink = styled(Link, {
   base: {
+    _hover: {
+      boxShadow: '0 2px 0 #0200FF',
+      transition: 'box-shadow 200ms ease 0s',
+    },
     color: 'action-100',
   },
 });
@@ -32,17 +36,21 @@ export const SiteLayout = ({
           padding: '16px',
         })}
       >
-        <Link
-          className={css({
-            alignItems: 'center',
-            display: 'flex',
-            fontWeight: '700',
-          })}
-          href="/"
-          title="Gajus"
-        >
-          Gajus
-        </Link>
+        <div>
+          <Link
+            className={css({
+              _hover: {
+                boxShadow: '0 2px 0 #000',
+                transition: 'box-shadow 200ms ease 0s',
+              },
+              fontWeight: '700',
+            })}
+            href="/"
+            title="Gajus"
+          >
+            Gajus
+          </Link>
+        </div>
         <p>A source of truth for my thoughts about engineering and startups</p>
       </div>
       <div>{children}</div>
@@ -53,6 +61,9 @@ export const SiteLayout = ({
         })}
       >
         <ul>
+          <li>
+            <FooterLink href="https://gajus.com/">Blog</FooterLink>
+          </li>
           <li>
             <FooterLink href="mailto:gajus@gajus.com">Email</FooterLink>
           </li>
