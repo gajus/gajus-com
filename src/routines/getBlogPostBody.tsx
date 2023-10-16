@@ -2,12 +2,12 @@ import { Link } from '@/components/Link';
 import { css } from '@/styles';
 import { omit } from '@/utilities/omit';
 import { type BlogPostHead } from '@/zodSchemas/BlogPostHeadZodSchema';
-import { Code } from 'bright';
 import { type MDXComponents } from 'mdx/types';
 import { compileMDX } from 'next-mdx-remote/rsc';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { cache, type JSXElementConstructor, type ReactElement } from 'react';
+import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import remarkFootnotes from 'remark-footnotes';
 import remarkGfm from 'remark-gfm';
@@ -76,20 +76,6 @@ const mdxComponents: MDXComponents = {
       </h4>
     );
   },
-
-  pre: ({ children }) => {
-    return (
-      <div
-        className={css({
-          borderColor: 'border-100',
-          borderStyle: 'solid',
-          borderWidth: '1px',
-        })}
-      >
-        <Code theme="github-light">{children}</Code>
-      </div>
-    );
-  },
 };
 
 export const getBlogPostBody = cache(
@@ -106,7 +92,16 @@ export const getBlogPostBody = cache(
       components: mdxComponents,
       options: {
         mdxOptions: {
-          rehypePlugins: [rehypeSlug],
+          rehypePlugins: [
+            rehypeSlug,
+            [
+              rehypePrettyCode,
+              {
+                keepBackground: false,
+                theme: 'github-light',
+              },
+            ],
+          ],
           remarkPlugins: [[remarkFootnotes, { inlineNotes: true }], remarkGfm],
         },
         parseFrontmatter: true,

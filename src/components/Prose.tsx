@@ -41,6 +41,14 @@ export const Prose = ({ children }: PropsWithChildren) => {
         '& > h4': {
           fontSize: 'x3',
         },
+        '& [data-rehype-pretty-code-fragment]': {
+          background: '#F8FAFE',
+          borderRadius: '8px',
+          fontFamily: 'monospace',
+          fontSize: '18px',
+          lineHeight: '24px',
+          padding: '16px',
+        },
         '& kbd': {
           background: 'code-background-100',
           borderRadius: '8px',
