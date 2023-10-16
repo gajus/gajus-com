@@ -143,6 +143,13 @@ export const generateMetadata = async ({
     },
     description: blogPostHead.description,
     keywords: blogPostHead.tags.map((tag) => tag.name),
+    openGraph: {
+      description: blogPostHead.description,
+      publishedTime: blogPostHead.publishedAt.toISOString(),
+      title: blogPostHead.title,
+      type: 'article',
+      url: `https://gajus.com/blog/${blogPostHead.slug}`,
+    },
     title: blogPostHead.title,
   };
 };
