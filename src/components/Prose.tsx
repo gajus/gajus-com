@@ -43,14 +43,33 @@ export const Prose = ({ children }: PropsWithChildren) => {
           fontFamily: 'monospace',
           fontSize: '18px',
           lineHeight: '24px',
-          padding: '16px',
+          paddingY: '16px',
         },
         '& [data-rehype-pretty-code-fragment] [data-highlighted-chars]': {
-          background: 'rgba(255, 255, 0, 0.5)',
+          background: 'rgb(116, 207, 136, 0.2)',
         },
         '& [data-rehype-pretty-code-fragment] [data-highlighted-line]': {
-          background: 'rgba(255, 255, 0, 0.5)',
+          background: 'rgb(116, 207, 136, 0.2)',
+          borderLeft: '4px solid #74cf74',
         },
+        '& [data-rehype-pretty-code-fragment] [data-line]': {
+          paddingX: '16px',
+        },
+        '& [data-rehype-pretty-code-fragment] [data-rehype-pretty-code-caption]':
+          {
+            color: '#333',
+            fontFamily: 'monospace',
+            fontSize: '18px',
+            padding: '8px',
+          },
+        '& [data-rehype-pretty-code-fragment] [data-rehype-pretty-code-title]':
+          {
+            color: '#333',
+            fontFamily: 'monospace',
+            fontSize: '18px',
+            fontWeight: '500',
+            padding: '8px',
+          },
         '& kbd': {
           background: 'code-background-100',
           borderRadius: '8px',
@@ -66,6 +85,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
           '& > code': {
             background: '#eee',
             borderRadius: '8px',
+            color: '#333',
             fontFamily: 'monospace',
             padding: '8px',
           },
@@ -103,6 +123,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
               boxShadow: '0 2px 0 #0200FF',
               transition: 'box-shadow 200ms ease 0s',
             },
+            boxShadow: '0 2px 0 rgb(2, 0, 255, 0.2)',
             color: 'action-100',
           },
         },

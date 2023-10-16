@@ -43,7 +43,7 @@ export const SiteLayout = ({
         >
           Gajus
         </Link>
-        <p>A blog about engineering and startups</p>
+        <p>A source of truth for my thoughts about engineering and startups</p>
       </div>
       <div>{children}</div>
       <div
@@ -74,6 +74,9 @@ export const SiteLayout = ({
             <FooterLink href="https://www.linkedin.com/in/gajus">
               LinkedIn
             </FooterLink>
+          </li>
+          <li>
+            <FooterLink href="https://gajus.com/blog/rss.xml">RSS</FooterLink>
           </li>
         </ul>
       </div>
