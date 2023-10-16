@@ -43,6 +43,7 @@ export const SiteLayout = ({
         >
           Gajus
         </Link>
+        <p>A blog about engineering and startups</p>
       </div>
       <div>{children}</div>
       <div
@@ -54,6 +55,11 @@ export const SiteLayout = ({
         <ul>
           <li>
             <FooterLink href="mailto:gajus@gajus.com">Email</FooterLink>
+          </li>
+          <li>
+            <FooterLink href="https://gajus.substack.com/subscribe">
+              Newsletter
+            </FooterLink>
           </li>
           <li>
             <FooterLink href="https://contra.com/gajus">Contra</FooterLink>
