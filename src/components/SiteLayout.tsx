@@ -14,6 +14,12 @@ const Main = styled(Stack, {
   },
 });
 
+const FooterLink = styled(Link, {
+  base: {
+    color: 'action-100',
+  },
+});
+
 export const SiteLayout = ({
   children,
 }: {
@@ -39,6 +45,32 @@ export const SiteLayout = ({
         </Link>
       </div>
       <div>{children}</div>
+      <div
+        className={css({
+          marginY: '32px',
+          padding: '16px',
+        })}
+      >
+        <ul>
+          <li>
+            <FooterLink href="mailto:gajus@gajus.com">Email</FooterLink>
+          </li>
+          <li>
+            <FooterLink href="https://contra.com/gajus">Contra</FooterLink>
+          </li>
+          <li>
+            <FooterLink href="https://github.com/gajus">GitHub</FooterLink>
+          </li>
+          <li>
+            <FooterLink href="https://twitter.com/kuizinas">Twitter</FooterLink>
+          </li>
+          <li>
+            <FooterLink href="https://www.linkedin.com/in/gajus">
+              LinkedIn
+            </FooterLink>
+          </li>
+        </ul>
+      </div>
     </Main>
   );
 };
