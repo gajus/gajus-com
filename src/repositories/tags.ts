@@ -13,6 +13,10 @@ export const tags: Record<string, Tag> = {
     name: 'Caching',
     slug: 'caching',
   },
+  engineering: {
+    name: 'Engineering',
+    slug: 'engineering',
+  },
   fastify: {
     name: 'Fastify',
     slug: 'fastify',

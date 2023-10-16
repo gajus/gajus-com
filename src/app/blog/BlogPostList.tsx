@@ -12,7 +12,6 @@ const BlogPostLink = styled(Link, {
     },
     borderRadius: '8px',
     display: 'grid',
-    gap: '16px',
     listStyle: 'none',
     padding: '16px',
   },

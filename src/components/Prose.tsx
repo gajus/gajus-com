@@ -31,10 +31,6 @@ export const Prose = ({ children }: PropsWithChildren) => {
         '& > h2': {
           fontSize: 'x5',
         },
-        '& > h2:not(:first-child)': {
-          marginBottom: '32px',
-          marginTop: '32px',
-        },
         '& > h3': {
           fontSize: 'x4',
         },
@@ -42,7 +38,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
           fontSize: 'x3',
         },
         '& [data-rehype-pretty-code-fragment] > pre': {
-          background: '#eee',
+          border: '1px solid #ccc',
           borderRadius: '8px',
           fontFamily: 'monospace',
           fontSize: '18px',
@@ -104,7 +100,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
         '& ul, & p': {
           '& a': {
             '&:hover': {
-              boxShadow: '0 2px 0 #2E8EFB',
+              boxShadow: '0 2px 0 #0200FF',
               transition: 'box-shadow 200ms ease 0s',
             },
             color: 'action-100',

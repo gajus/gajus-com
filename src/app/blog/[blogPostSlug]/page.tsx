@@ -8,7 +8,8 @@ import { connectToPostgres, sql } from '@/routines/connectToPostgres';
 import { findBlogPostHead } from '@/routines/findBlogPostHead';
 import { getBlogPostBody } from '@/routines/getBlogPostBody';
 import { getClientIpAddress } from '@/routines/getClientIpAddress';
-import { css, styled } from '@/styles';
+import { css, styled, Wrap } from '@/styles';
+import { type Tag } from '@/zodSchemas/TagZodSchema';
 import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
@@ -36,6 +37,22 @@ const PublicationDate = styled('time', {
 
 type Props = {
   params: { blogPostSlug: string };
+};
+
+const BlogPostingTag = ({ tag }: { readonly tag: Tag }) => {
+  return (
+    <div
+      className={css({
+        // background: '#eee',
+        border: '1px solid #ccc',
+        borderRadius: '32px',
+        fontSize: '12px',
+        padding: '0 16px',
+      })}
+    >
+      {tag.name}
+    </div>
+  );
 };
 
 export const generateMetadata = async ({
@@ -73,27 +90,46 @@ export default async ({ params: { blogPostSlug } }: Props) => {
 
   return (
     <SiteLayout>
-      <PublicationDate dateTime={blogPostHead.publishedAt.toISOString()}>
-        {blogPostHead.publishedAt.toDateString()}
-      </PublicationDate>
-      <PageTitle>{blogPostHead.title}</PageTitle>
-
       <div
         className={css({
-          marginY: '16px',
+          padding: '16px',
         })}
       >
-        <div id="blog-post-body">
-          <Prose>{blogPostBody.content}</Prose>
+        <PublicationDate dateTime={blogPostHead.publishedAt.toISOString()}>
+          {blogPostHead.publishedAt.toDateString()}
+        </PublicationDate>
+        <PageTitle>{blogPostHead.title}</PageTitle>
+        <Wrap
+          className={css({
+            marginBottom: '32px',
+            marginTop: '16px',
+          })}
+        >
+          {blogPostHead.tags.map((tag) => (
+            <BlogPostingTag
+              key={tag.name}
+              tag={tag}
+            />
+          ))}
+        </Wrap>
+
+        <div
+          className={css({
+            marginY: '16px',
+          })}
+        >
+          <div id="blog-post-body">
+            <Prose>{blogPostBody.content}</Prose>
+          </div>
         </div>
+
+        <BlogPostReactions
+          liked={hasBlogPostBeenLiked}
+          slug={blogPostHead.slug}
+        />
+
+        <Comments />
       </div>
-
-      <BlogPostReactions
-        liked={hasBlogPostBeenLiked}
-        slug={blogPostHead.slug}
-      />
-
-      <Comments />
 
       <BlogPostingJsonLd blogPostHead={blogPostHead} />
     </SiteLayout>

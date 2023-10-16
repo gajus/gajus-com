@@ -21,7 +21,11 @@ export const SiteLayout = ({
 }) => {
   return (
     <Main>
-      <div>
+      <div
+        className={css({
+          padding: '16px',
+        })}
+      >
         <Link
           className={css({
             alignItems: 'center',
