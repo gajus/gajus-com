@@ -1,7 +1,7 @@
-import { getBlogPostHeads } from './getBlogPostHeads';
+import { getAllBlogPostHeads } from './getAllBlogPostHeads';
 
 export const findBlogPostHead = async (slugOrGuid: string) => {
-  const blogPostHeads = await getBlogPostHeads();
+  const blogPostHeads = await getAllBlogPostHeads();
 
   const blogPostHead = blogPostHeads.find((someBlogPostHead) => {
     return (

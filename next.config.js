@@ -1,4 +1,5 @@
 const { withSentryConfig } = require('@sentry/nextjs');
+const { withContentlayer } = require('next-contentlayer');
 
 // eslint-disable-next-line node/no-process-env
 const { NODE_ENV } = process.env;
@@ -46,4 +47,4 @@ if (NODE_ENV === 'production') {
   );
 }
 
-module.exports = nextConfig;
+module.exports = withContentlayer(nextConfig);

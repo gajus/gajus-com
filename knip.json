@@ -2,7 +2,8 @@
   "$schema": "https://unpkg.com/knip@2/schema.json",
   "entry": [
     "src/app/**/page.tsx!",
-    "src/app/**/route.ts!"
+    "src/app/**/route.ts!",
+    "contentlayer.config.ts"
   ],
   "ignore": [
     "**/__generated__/**/*",

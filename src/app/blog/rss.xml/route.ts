@@ -1,4 +1,4 @@
-import { getBlogPostHeads } from '@/routines/getBlogPostHeads';
+import { getAllBlogPostHeads } from '@/routines/getAllBlogPostHeads';
 import Rss from 'rss';
 
 const SITE_URL = 'https://gajus.com';
@@ -6,7 +6,7 @@ const SITE_URL = 'https://gajus.com';
 export const dynamic = 'force-dynamic';
 
 export const GET = async () => {
-  const blogPostHeads = await getBlogPostHeads();
+  const blogPostHeads = await getAllBlogPostHeads();
 
   const feed = new Rss({
     description: 'Gajus blog posts.',

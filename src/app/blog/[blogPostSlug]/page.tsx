@@ -1,6 +1,7 @@
 import { BlogPostingJsonLd } from '@/components/BlogPostingJsonLd';
 import { BlogPostReactions } from '@/components/BlogPostReactions';
 import { Comments } from '@/components/Comments';
+import { Link } from '@/components/Link';
 import { PageTitle } from '@/components/PageTitle';
 import { Prose } from '@/components/Prose';
 import { SiteLayout } from '@/components/SiteLayout';
@@ -9,9 +10,12 @@ import { findBlogPostHead } from '@/routines/findBlogPostHead';
 import { getBlogPostBody } from '@/routines/getBlogPostBody';
 import { getClientIpAddress } from '@/routines/getClientIpAddress';
 import { css, styled, Wrap } from '@/styles';
+import { omit } from '@/utilities/omit';
 import { type Tag } from '@/zodSchemas/TagZodSchema';
+import { type MDXComponents } from 'mdx/types';
 import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { useMDXComponent } from 'next-contentlayer/hooks';
 import { cache } from 'react';
 
 const hasLikedBlogPost = cache(
@@ -55,6 +59,75 @@ const BlogPostingTag = ({ tag }: { readonly tag: Tag }) => {
   );
 };
 
+const anchorLink = css({
+  marginLeft: '-8px',
+  padding: '8px',
+});
+
+const mdxComponents: MDXComponents = {
+  a: ({ children, ...props }) => {
+    if ('ref' in props) {
+      throw new Error('Unexpected ref');
+    }
+
+    return (
+      <Link
+        {...omit(props, 'ref')}
+        href={props.href ?? ''}
+      >
+        {children}
+      </Link>
+    );
+  },
+  h2: ({ children, ...props }) => {
+    return (
+      <h2 {...props}>
+        <a
+          aria-hidden
+          className={anchorLink}
+          href={`#${props.id}`}
+        >
+          {children}
+        </a>
+      </h2>
+    );
+  },
+  h3: ({ children, ...props }) => {
+    return (
+      <h3 {...props}>
+        <a
+          aria-hidden
+          className={anchorLink}
+          href={`#${props.id}`}
+        >
+          {children}
+        </a>
+      </h3>
+    );
+  },
+  h4: ({ children, ...props }) => {
+    return (
+      <h4 {...props}>
+        <a
+          aria-hidden
+          className={anchorLink}
+          href={`#${props.id}`}
+        >
+          {children}
+        </a>
+      </h4>
+    );
+  },
+};
+
+const BlogPostBody = ({ slug }: { readonly slug: string }) => {
+  const code = getBlogPostBody(slug);
+
+  const MDXContent = useMDXComponent(code);
+
+  return <MDXContent components={mdxComponents} />;
+};
+
 export const generateMetadata = async ({
   params: { blogPostSlug },
 }: Props): Promise<Metadata> => {
@@ -80,8 +153,6 @@ export default async ({ params: { blogPostSlug } }: Props) => {
   if (!blogPostHead) {
     return notFound();
   }
-
-  const blogPostBody = await getBlogPostBody(blogPostHead);
 
   const hasBlogPostBeenLiked = await hasLikedBlogPost(
     blogPostHead.slug,
@@ -119,7 +190,9 @@ export default async ({ params: { blogPostSlug } }: Props) => {
           })}
         >
           <div id="blog-post-body">
-            <Prose>{blogPostBody.content}</Prose>
+            <Prose>
+              <BlogPostBody slug={blogPostHead.slug} />
+            </Prose>
           </div>
         </div>
 

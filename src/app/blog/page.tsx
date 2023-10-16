@@ -1,6 +1,6 @@
 import { BlogPostList } from './BlogPostList';
 import { SiteLayout } from '@/components/SiteLayout';
-import { getBlogPostHeads } from '@/routines/getBlogPostHeads';
+import { getAllBlogPostHeads } from '@/routines/getAllBlogPostHeads';
 import { type Metadata } from 'next';
 
 export const generateMetadata = async (): Promise<Metadata> => {
@@ -18,7 +18,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 };
 
 export default async () => {
-  const blogPostHeads = await getBlogPostHeads();
+  const blogPostHeads = await getAllBlogPostHeads();
 
   return (
     <SiteLayout>

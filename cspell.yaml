@@ -15,6 +15,7 @@ ignoreRegExpList:
 language: en
 version: '0.2'
 words:
+  - contentlayer
   - fastify
   - frontmatter
   - gajus

@@ -1,6 +1,6 @@
 // cspell:ignore urlset lastmod
 
-import { getBlogPostHeads } from '@/routines/getBlogPostHeads';
+import { getAllBlogPostHeads } from '@/routines/getAllBlogPostHeads';
 import { stringifyXml } from '@/utilities/stringifyXml';
 
 export const dynamic = 'force-dynamic';
@@ -32,7 +32,7 @@ const createResponse = (entries: Entry[]) => {
 };
 
 export const GET = async () => {
-  const blogPostHeads = await getBlogPostHeads();
+  const blogPostHeads = await getAllBlogPostHeads();
 
   const entries = [
     {
