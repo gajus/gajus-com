@@ -12,6 +12,7 @@
     "react-animated-heart": "^0.0.8",
     "react-dom": "^18",
     "rehype-slug": "^5.1.0",
+    "remark-footnotes": "^4.0.1",
     "remark-gfm": "^3.0.1",
     "rss": "^1.2.2",
     "schema-dts": "^1.1.2",

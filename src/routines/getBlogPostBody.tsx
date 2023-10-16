@@ -9,6 +9,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { cache, type JSXElementConstructor, type ReactElement } from 'react';
 import rehypeSlug from 'rehype-slug';
+import remarkFootnotes from 'remark-footnotes';
 import remarkGfm from 'remark-gfm';
 
 type BlogPostBody = {
@@ -106,7 +107,7 @@ export const getBlogPostBody = cache(
       options: {
         mdxOptions: {
           rehypePlugins: [rehypeSlug],
-          remarkPlugins: [remarkGfm],
+          remarkPlugins: [[remarkFootnotes, { inlineNotes: true }], remarkGfm],
         },
         parseFrontmatter: true,
       },
