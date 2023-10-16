@@ -1,7 +1,9 @@
 // eslint-disable-next-line import/no-unassigned-import
 import './globals.css';
+import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import { type Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Suspense } from 'react';
 
 const interFont = Inter({ subsets: ['latin'] });
 
@@ -28,7 +30,13 @@ export const metadata: Metadata = {
 export default async ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
-      <body className={interFont.className}>{children}</body>
+      <body className={interFont.className}>
+        {children}
+
+        <Suspense>
+          <GoogleAnalytics measurementId="G-11DC5N6W9F" />
+        </Suspense>
+      </body>
     </html>
   );
 };
