@@ -1,0 +1,28 @@
+---
+description: Enabling @opentelemetry/auto-instrumentations-node logs
+guid: 7a3036fa-642f-490f-837d-af731920ee04
+publishedAt: 2024-01-25 17:39:57
+tags: [engineering]
+title: How to enable open telemetry logs?
+---
+
+Frustratingly, @opentelemetry/auto-instrumentations-node does not log anything by default.
+
+Their documentation also misleads you into thinking that you can enable logs by setting the `OTEL_LOG_LEVEL` environment variable to `debug` or `trace`.
+
+https://opentelemetry.io/docs/languages/js/automatic/
+
+I have not been successful with those approaches.
+
+The only thing that worked was to manually configure the logger:
+
+```ts
+const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
+const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
+
+diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
+
+getNodeAutoInstrumentations();
+
+// ...
+```
