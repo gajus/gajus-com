@@ -40,11 +40,13 @@ export const Prose = ({ children }: PropsWithChildren) => {
         '& [data-rehype-pretty-code-fragment] > pre': {
           border: '1px solid #ccc',
           borderRadius: '8px',
-          fontFamily: 'monospace',
           fontSize: '18px',
           lineHeight: '24px',
           overflowX: 'scroll',
           paddingY: '16px',
+        },
+        '& [data-rehype-pretty-code-fragment] > pre code': {
+          fontFamily: 'monospace',
         },
         '& [data-rehype-pretty-code-fragment] [data-highlighted-chars]': {
           background: 'rgb(116, 207, 136, 0.2)',

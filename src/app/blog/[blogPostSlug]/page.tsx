@@ -1,5 +1,4 @@
 import { BlogPostingJsonLd } from '@/components/BlogPostingJsonLd';
-import { BlogPostReactions } from '@/components/BlogPostReactions';
 import { Comments } from '@/components/Comments';
 import { Link } from '@/components/Link';
 import { PageTitle } from '@/components/PageTitle';
@@ -202,11 +201,6 @@ export default async ({ params: { blogPostSlug } }: Props) => {
             </Prose>
           </div>
         </div>
-
-        <BlogPostReactions
-          liked={hasBlogPostBeenLiked}
-          slug={blogPostHead.slug}
-        />
 
         <Comments />
       </div>

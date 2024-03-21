@@ -1,18 +1,5 @@
 import { Link } from '@/components/Link';
-import { css, Stack, styled } from '@/styles';
-
-const Main = styled(Stack, {
-  base: {
-    flexDirection: 'column',
-    gap: '32px',
-    maxWidth: '860px',
-    padding: '16px',
-    sm: {
-      marginX: 'auto',
-      marginY: '32px',
-    },
-  },
-});
+import { css, styled } from '@/styles';
 
 const FooterLink = styled(Link, {
   base: {
@@ -30,7 +17,19 @@ export const SiteLayout = ({
   readonly children: React.ReactNode;
 }) => {
   return (
-    <Main>
+    <div
+      className={css({
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '32px',
+        maxWidth: '860px',
+        padding: '16px',
+        sm: {
+          marginX: 'auto',
+          marginY: '32px',
+        },
+      })}
+    >
       <div
         className={css({
           padding: '16px',
@@ -91,6 +90,6 @@ export const SiteLayout = ({
           </li>
         </ul>
       </div>
-    </Main>
+    </div>
   );
 };
