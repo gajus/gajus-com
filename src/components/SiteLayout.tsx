@@ -1,14 +1,12 @@
 import { Link } from '@/components/Link';
-import { css, styled } from '@/styles';
+import { css } from '@/styles';
 
-const FooterLink = styled(Link, {
-  base: {
-    _hover: {
-      boxShadow: '0 2px 0 #0200FF',
-      transition: 'box-shadow 200ms ease 0s',
-    },
-    color: 'action-100',
+const footerLink = css({
+  _hover: {
+    boxShadow: '0 2px 0 #0200FF',
+    transition: 'box-shadow 200ms ease 0s',
   },
+  color: 'action-100',
 });
 
 export const SiteLayout = ({
@@ -62,32 +60,68 @@ export const SiteLayout = ({
       >
         <ul>
           <li>
-            <FooterLink href="https://gajus.com/">Blog</FooterLink>
+            <Link
+              className={footerLink}
+              href="https://gajus.com/"
+            >
+              Blog
+            </Link>
           </li>
           <li>
-            <FooterLink href="mailto:gajus@gajus.com">Email</FooterLink>
+            <Link
+              className={footerLink}
+              href="mailto:gajus@gajus.com"
+            >
+              Email
+            </Link>
           </li>
           <li>
-            <FooterLink href="https://gajus.substack.com/subscribe">
+            <Link
+              className={footerLink}
+              href="https://gajus.substack.com/subscribe"
+            >
               Newsletter
-            </FooterLink>
+            </Link>
           </li>
           <li>
-            <FooterLink href="https://contra.com/gajus">Contra</FooterLink>
+            <Link
+              className={footerLink}
+              href="https://contra.com/gajus"
+            >
+              Contra
+            </Link>
           </li>
           <li>
-            <FooterLink href="https://github.com/gajus">GitHub</FooterLink>
+            <Link
+              className={footerLink}
+              href="https://github.com/gajus"
+            >
+              GitHub
+            </Link>
           </li>
           <li>
-            <FooterLink href="https://twitter.com/kuizinas">Twitter</FooterLink>
+            <Link
+              className={footerLink}
+              href="https://twitter.com/kuizinas"
+            >
+              Twitter
+            </Link>
           </li>
           <li>
-            <FooterLink href="https://www.linkedin.com/in/gajus">
+            <Link
+              className={footerLink}
+              href="https://www.linkedin.com/in/gajus"
+            >
               LinkedIn
-            </FooterLink>
+            </Link>
           </li>
           <li>
-            <FooterLink href="https://gajus.com/blog/rss.xml">RSS</FooterLink>
+            <Link
+              className={footerLink}
+              href="https://gajus.com/blog/rss.xml"
+            >
+              RSS
+            </Link>
           </li>
         </ul>
       </div>

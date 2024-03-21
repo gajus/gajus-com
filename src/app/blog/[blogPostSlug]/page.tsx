@@ -8,7 +8,7 @@ import { connectToPostgres, sql } from '@/routines/connectToPostgres';
 import { findBlogPostHead } from '@/routines/findBlogPostHead';
 import { getBlogPostBody } from '@/routines/getBlogPostBody';
 import { getClientIpAddress } from '@/routines/getClientIpAddress';
-import { css, styled, Wrap } from '@/styles';
+import { css } from '@/styles';
 import { omit } from '@/utilities/omit';
 import { type Tag } from '@/zodSchemas/TagZodSchema';
 import { type MDXComponents } from 'mdx/types';
@@ -30,13 +30,6 @@ const hasLikedBlogPost = cache(
   `);
   },
 );
-
-const PublicationDate = styled('time', {
-  base: {
-    color: 'action-100',
-    fontWeight: '700',
-  },
-});
 
 type Props = {
   readonly params: { blogPostSlug: string };
@@ -172,12 +165,22 @@ export default async ({ params: { blogPostSlug } }: Props) => {
           padding: '16px',
         })}
       >
-        <PublicationDate dateTime={blogPostHead.publishedAt.toISOString()}>
-          {blogPostHead.publishedAt.toDateString()}
-        </PublicationDate>
-        <PageTitle>{blogPostHead.title}</PageTitle>
-        <Wrap
+        <time
           className={css({
+            base: {
+              color: 'action-100',
+              fontWeight: '700',
+            },
+          })}
+          dateTime={blogPostHead.publishedAt.toISOString()}
+        >
+          {blogPostHead.publishedAt.toDateString()}
+        </time>
+        <PageTitle>{blogPostHead.title}</PageTitle>
+        <div
+          className={css({
+            display: 'flex',
+            gap: '8px',
             marginBottom: '32px',
             marginTop: '16px',
           })}
@@ -188,7 +191,7 @@ export default async ({ params: { blogPostSlug } }: Props) => {
               tag={tag}
             />
           ))}
-        </Wrap>
+        </div>
 
         <div
           className={css({
