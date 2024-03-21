@@ -6,9 +6,7 @@
     "contentlayer": "^0.3.4",
     "next": "13.5.4",
     "next-contentlayer": "^0.3.4",
-    "next-safe-action": "^4.0.1",
     "react": "^18",
-    "react-animated-heart": "^0.0.8",
     "react-dom": "^18",
     "rehype-pretty-code": "^0.10.1",
     "rehype-slug": "^5.1.0",
@@ -16,8 +14,6 @@
     "remark-gfm": "^3.0.1",
     "rss": "^1.2.2",
     "schema-dts": "^1.1.2",
-    "slonik": "^37.0.1",
-    "slonik-interceptor-query-logging": "^1.4.7",
     "xml2js": "^0.6.2",
     "zod": "^3.22.4"
   },

@@ -4,10 +4,8 @@ import { Link } from '@/components/Link';
 import { PageTitle } from '@/components/PageTitle';
 import { Prose } from '@/components/Prose';
 import { SiteLayout } from '@/components/SiteLayout';
-import { connectToPostgres, sql } from '@/routines/connectToPostgres';
 import { findBlogPostHead } from '@/routines/findBlogPostHead';
 import { getBlogPostBody } from '@/routines/getBlogPostBody';
-import { getClientIpAddress } from '@/routines/getClientIpAddress';
 import { css } from '@/styles';
 import { omit } from '@/utilities/omit';
 import { type Tag } from '@/zodSchemas/TagZodSchema';
@@ -15,21 +13,6 @@ import { type MDXComponents } from 'mdx/types';
 import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { useMDXComponent } from 'next-contentlayer/hooks';
-import { cache } from 'react';
-
-const hasLikedBlogPost = cache(
-  async (slug: string, clientIpAddress: string) => {
-    const pool = await connectToPostgres();
-
-    return await pool.exists(sql.unsafe`
-    SELECT *
-    FROM blog_post_like
-    WHERE
-      blog_post_slug = ${slug} AND
-      ip_address = ${clientIpAddress}
-  `);
-  },
-);
 
 type Props = {
   readonly params: { blogPostSlug: string };
@@ -152,11 +135,6 @@ export default async ({ params: { blogPostSlug } }: Props) => {
   if (!blogPostHead) {
     return notFound();
   }
-
-  const hasBlogPostBeenLiked = await hasLikedBlogPost(
-    blogPostHead.slug,
-    getClientIpAddress(),
-  );
 
   return (
     <SiteLayout>
