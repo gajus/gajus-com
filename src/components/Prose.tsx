@@ -89,7 +89,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
           overflowWrap: 'break-word',
         },
         '& p, & li, & h2, & h3, & h4': {
-          '& > code': {
+          '& > a > code, & > code': {
             background: '#eee',
             borderRadius: '4px',
             color: '#333',
