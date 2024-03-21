@@ -38,11 +38,6 @@
     "vitest": "^0.34.6"
   },
   "name": "gajus-blog",
-  "pnpm": {
-    "patchedDependencies": {
-      "pg@8.11.3": "patches/pg@8.11.3.patch"
-    }
-  },
   "private": true,
   "scripts": {
     "build": "next build",
