@@ -1,7 +1,7 @@
 const { withSentryConfig } = require('@sentry/nextjs');
 const { withContentlayer } = require('next-contentlayer');
 
-// eslint-disable-next-line node/no-process-env
+// eslint-disable-next-line n/no-process-env
 const { NODE_ENV } = process.env;
 
 /** @type {import('next').NextConfig} */

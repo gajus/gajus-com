@@ -1,5 +1,5 @@
 const { POSTGRES_DSN } =
-  // eslint-disable-next-line node/no-process-env
+  // eslint-disable-next-line n/no-process-env
   process.env as Record<string, string>;
 
 const config = {

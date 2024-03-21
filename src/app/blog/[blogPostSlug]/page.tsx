@@ -40,7 +40,7 @@ const PublicationDate = styled('time', {
 });
 
 type Props = {
-  params: { blogPostSlug: string };
+  readonly params: { blogPostSlug: string };
 };
 
 const BlogPostingTag = ({ tag }: { readonly tag: Tag }) => {

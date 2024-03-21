@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async ({ children }: { children: React.ReactNode }) => {
+export default async ({ children }: { readonly children: React.ReactNode }) => {
   return (
     <html lang="en">
       <body className={interFont.className}>
