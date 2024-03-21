@@ -93,7 +93,9 @@ import {
   getRootSpan,
   spanToTraceHeader,
 } from '@sentry/core';
-import { dynamicSamplingContextToSentryBaggageHeader } from '@sentry/utils';
+import {
+  dynamicSamplingContextToSentryBaggageHeader,
+} from '@sentry/utils';
 
 type TraceHeaders = {
   sentryBaggage: string;
@@ -145,7 +147,10 @@ This is how you make the client-side Sentry SDK aware of the trace that started 
 The client-side Sentry SDK will automatically pick up the trace from the meta tags. However, you need to initialize the Sentry SDK using `browserTracingIntegration` integration.
 
 ```ts
-import { browserTracingIntegration, init } from '@sentry/browser';
+import {
+  browserTracingIntegration,
+  init,
+} from '@sentry/browser';
 // or import { init } from '@sentry/react'; if you are using React
 
 init({
