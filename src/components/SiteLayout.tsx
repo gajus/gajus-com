@@ -29,6 +29,7 @@ export const SiteLayout = ({
           marginY: '32px',
         },
       })}
+      id="app"
     >
       <div
         className={css({

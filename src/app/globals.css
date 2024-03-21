@@ -2,9 +2,14 @@
 
 @layer reset {
   * {
-    box-sizing: border-box;
     padding: 0;
     margin: 0;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
   }
 
   input,
@@ -33,5 +38,9 @@
   body {
     color: #000;
     background: #fff;
+  }
+
+  #app {
+    isolation: isolate;
   }
 }
