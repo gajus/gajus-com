@@ -71,6 +71,9 @@ export const Prose = ({ children }: PropsWithChildren) => {
             fontWeight: '500',
             padding: '8px',
           },
+        '& em': {
+          fontStyle: 'italic',
+        },
         '& kbd': {
           background: 'code-background-100',
           borderRadius: '8px',
@@ -88,7 +91,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
             borderRadius: '8px',
             color: '#333',
             fontFamily: 'monospace',
-            padding: '8px',
+            padding: '4px',
           },
         },
         '& table': {
@@ -118,7 +121,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
           marginY: '16px',
           paddingLeft: '32px',
         },
-        '& ul, & p': {
+        '& ul, & p, & li': {
           '& a': {
             '&:hover': {
               boxShadow: '0 2px 0 #0200FF',

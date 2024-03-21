@@ -1,28 +1,258 @@
 ---
-description: Enabling @opentelemetry/auto-instrumentations-node logs
-guid: 7a3036fa-642f-490f-837d-af731920ee04
-publishedAt: 2024-01-25 17:39:57
+description: Challenges adding OpenTelemetry and Sentry tracing to a Node.js app
+guid: 938ebd51-4965-477d-b866-bb7c6481189b
+publishedAt: 2024-03-21 18:24:06
 tags: [engineering]
-title: How to enable open telemetry logs?
+title: How to add Sentry tracing to your Node.js app
 ---
 
-Frustratingly, `@opentelemetry/auto-instrumentations-node` does not log anything by default.
+Tracing is awesome for understanding how your application behaves in production. It allows you to see how long each operation takes, how many times it's called, and how it's called. This is especially useful when you're trying to understand why your application is slow or why it's failing. However, if this is your first time adding tracing to your application, it can be a bit overwhelming. In this post, I'll show you how to add [Sentry tracing](https://docs.sentry.io/product/sentry-basics/concepts/tracing/) to your Node.js application using [OpenTelemetry](https://opentelemetry.io/) and Sentry.
 
-Their documentation also misleads you into thinking that you can enable logs by setting the `OTEL_LOG_LEVEL` environment variable to `debug` or `trace`.
+## Sentry vs OpenTelemetry
 
-https://opentelemetry.io/docs/languages/js/automatic/
+You might be familiar with [@sentry/tracing](https://www.npmjs.com/package/@sentry/tracing). This package was deprecated in `>= 7.47.0` and replaced with OpenTelemetry. [OpenTelemetry](https://opentelemetry.io/docs/languages/js/getting-started/nodejs/) is an open-source observability framework for cloud-native software. It provides a single set of APIs, libraries, agents, and instrumentation to capture distributed traces and metrics from your application. It's a vendor-agnostic solution that allows you to send your traces to any backend of your choice. If you are familiar with Sentry v7 tracing API (`startTransaction`), you might benefit from reading the [migration guide](https://github.com/getsentry/sentry-javascript/blob/develop/MIGRATION.md#upgrading-from-7x-to-8x) first.
 
-I have not been successful with those approaches.
+If you have prior experience with OpenTelemetry, you might be familiar with their SDK and how it is used to [instrument the codebase](https://opentelemetry.io/docs/languages/js/instrumentation/). You can still use the OpenTelemetry to instrument your application or you can use the [Sentry SDK](https://github.com/getsentry/sentry-javascript/blob/f078a3be4e58d473e9a62ceaf18501113ecdee38/MIGRATION.md#performance-monitoring-api) which abstracts the OpenTelemetry SDK and provides a simpler interface to instrument your application (`Sentry.startSpan`, `Sentry.startInactiveSpan`, and `Sentry.startSpanManual`).
 
-The only thing that worked was to manually configure the logger:
+The rest of the post assumes that you are using Sentry v8 and the Sentry SDK to instrument your application. If you need a reference for how to instrument the application using v7, I have a [playground](https://github.com/gajus/sentry-tracing/tree/e2b964fbefeb6e7042f574fa53e0b889259d96d6) that you can use to get started.
+
+## Enabling Tracing
+
+If you are using v8, this could not be simpler because the entire OpenTelemetry SDK is abstracted away. You can enable tracing by simply initializing the Sentry SDK.
+
+```typescript
+import { init } from '@sentry/node';
+
+init({
+  tracesSampleRate: 1,
+});
+```
+
+Just by doing this, you have loaded OpenTelemetry SDK and instrumented all the supported libraries using [auto instrumentation](https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node). This includes [HTTP](https://nodejs.org/api/http.html), [`fastify`](https://npmjs.com/fastify), [`pg`](https://npmjs.com/pg), and many others.
+
+This could be the end of the article, but there is a catch.
+
+## Quick note about the "optimal" sample rate
+
+I wasted way more time than I care to admit trying to figure out what's a reasonable sample rate from the get go. Start with `{ tracesSampleRate: 1 }` and only explore other values once you have everything else working. We will get back to this later.
+
+## Node.js ESM modules
+
+So about that catch.
+
+If you are using ESM modules (`{ "type": "module" }`), you will need to use a [custom loader](https://nodejs.org/api/module.html#customization-hooks) to run the application. This is because the OpenTelemetry SDK uses `require` to load the instrumentations and the `require` function is not available in ESM modules. This is a known issue and there is an [open issue](https://github.com/open-telemetry/opentelemetry-js/issues/4437).
+
+The way we fix this is by using [import-in-the-middle](https://npmjs.com/import-in-the-middle) to modify modules before/after they are loaded.
+
+You can achieve this by using `--experimental-loader` flag:
+
+```bash
+node --loader=import-in-the-middle/hook.mjs ./dist/bin/server.js
+```
+
+You can also achieve this by using `--import` with `register()` instead.
 
 ```ts
-const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
-const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
+import { register } from "node:module";
+import { pathToFileURL } from "node:url";
 
-diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
+register("import-in-the-middle/hook.mjs", pathToFileURL("./"));
 
-getNodeAutoInstrumentations();
-
-// ...
+// The rest of your application ...
 ```
+
+## Patching `import-in-the-middle`
+
+In principle, `import-in-the-middle` should "just work". However, I found that we hit many edge cases when trying to roll it out in our relatively large application. I even tried to patch `import-in-the-middle` to make it worth for all possible ESM export syntax permutations (of which there are many), but eventually realized that it's a losing battle for our use case. Instead, I ended up _patching_ `import-in-the-middle` to exclude problematic code paths.
+
+https://github.com/DataDog/import-in-the-middle/issues/59#issuecomment-1912248475
+
+You can copy this patch if you are experiencing similar issues.
+
+## Distributed Tracing
+
+So far we have only enabled tracing on a single Node.js program. However, the real power of tracing is in [distributed tracing](https://docs.sentry.io/product/sentry-basics/concepts/tracing/distributed-tracing/). Distributed tracing allows to track a request as it travels through multiple services. An example of a distributed trace is a request that starts in a web server (SSR), then loads a client-side application, and then makes a request to an API. API then makes a request to a database, etc. Each of these operations is a [span](https://opentelemetry.io/docs/concepts/signals/traces/#spans) in the trace.
+
+The part that threw me off was _how do I tell client-side about the trace_? The answer is that you have to render special meta tags in the HTML that the client-side application can use to continue the trace. These tags are called `sentry-trace` and `baggage`:
+
+```html
+<meta content="82f1261d35cdef27fb2b249877972b72-211c74d42a1ed967-1" name="sentry-trace" />
+<meta content="sentry-environment=production,sentry-release=contra-web-app%408616a3f3,sentry-public_key=3545da037ee749aa92a658508243b17d,sentry-trace_id=82f1261d35cdef27fb2b249877972b72,sentry-sampled=true" name="baggage" />
+```
+
+The `sentry-trace` meta tag is used to continue the trace. The `baggage` meta tag is used to pass additional context to the client-side application. This is useful for passing the environment, release, and other context that is useful for debugging.
+
+The client-side Sentry SDK will automatically pick up these meta tags and continue the trace by including these values in the outgoing HTTP request headers.
+
+However, the way you render these tags is not documented anywhere that I could find. Below is a snippet that I extracted (with slight modifications) from the Sentry SDK source code:
+
+```ts
+import {
+  getActiveSpan,
+  getDynamicSamplingContextFromSpan,
+  getRootSpan,
+  spanToTraceHeader,
+} from '@sentry/core';
+import { dynamicSamplingContextToSentryBaggageHeader } from '@sentry/utils';
+
+type TraceHeaders = {
+  sentryBaggage: string;
+  sentryTrace: string;
+};
+
+export const getTraceAndBaggage = (): TraceHeaders | null => {
+  const span = getActiveSpan();
+  const rootSpan = span && getRootSpan(span);
+
+  if (rootSpan) {
+    const dynamicSamplingContext = getDynamicSamplingContextFromSpan(rootSpan);
+
+    const sentryBaggage = dynamicSamplingContextToSentryBaggageHeader(
+      dynamicSamplingContext,
+    );
+
+    if (!sentryBaggage) {
+      return null;
+    }
+
+    return {
+      sentryBaggage,
+      sentryTrace: spanToTraceHeader(span),
+    };
+  }
+
+  return null;
+};
+```
+
+So whatever is that you use to render your HTML, you can use this function to render the `sentry-trace` and `baggage` meta tags.
+
+```ts
+const traceHeaders = getTraceAndBaggage();
+
+if (traceHeaders) {
+  htmlHead += `
+    <meta content="${traceHeaders.sentryTrace}" name="sentry-trace" />
+    <meta content="${traceHeaders.sentryBaggage}" name="baggage" />
+  `;
+}
+```
+
+This is how you make the client-side Sentry SDK aware of the trace that started on the server-side.
+
+## Enabling Tracing in the Browser
+
+The client-side Sentry SDK will automatically pick up the trace from the meta tags. However, you need to initialize the Sentry SDK using `browserTracingIntegration` integration.
+
+```ts
+import { browserTracingIntegration, init } from '@sentry/browser';
+// or import { init } from '@sentry/react'; if you are using React
+
+init({
+  integrations: [browserTracingIntegration()],
+  tracesSampleRate: 1,
+});
+```
+
+## Setting propagation targets
+
+By default, tracing headers will be attached to all outgoing requests on the same origin. For example, if you're on `https://example.com/` and you send a request to `https://example.com/api`, the request will be traced. Requests to `https://api.example.com/` will not, because it is on a different origin. The same goes for all applications running on localhost.
+
+When you provide a `tracePropagationTargets` option, all of the entries you defined will now be matched be matched against the full URL of the outgoing request.
+
+We ended up using the following configuration:
+
+```ts
+tracePropagationTargets: [
+  // If the request is a same-origin request, we also match the tracePropagationTargets against the resolved pathname of the request.
+  // e.g. This would match a request to https://contra.com/api/ originating from https://contra.com/.
+  '/api/',
+  // In our local development environment, our web application is hosted on port 8080 and the API is hosted on 8081, so we need to provide the full URL.
+  'https://local.contra.dev:8081/api/', 
+],
+```
+
+## Ensuring that the trace is propagated
+
+You need to ensure that the `sentry-trace` and `baggage` headers are attached to the outgoing requests.
+
+In browser, just open the [Network tab](https://developer.chrome.com/docs/devtools/network) in your browser's developer tools and inspect the outgoing requests. You should see the `sentry-trace` and `baggage` headers attached to the requests.
+
+If they are not attached, you need to ensure that the `tracePropagationTargets` are set correctly.
+
+## Understanding the `sentry-trace` header
+
+`sentry-trace` header consists of three parts:
+
+1. `trace_id` - The ID of the trace.
+2. `span_id` - The ID of the [span](https://opentelemetry.io/docs/concepts/signals/traces/#spans).
+3. `sampled` - Whether the trace is sampled (`1` or `0`). If the trace is not sampled, the spans will not be sent to the backend.
+
+An example of a `sentry-trace` header is:
+
+```plaintext
+ea85f7d54c09beba8cf1fc543f9a6dfe-64264ad70ec5d574-1
+```
+
+Here `ea85f7d54c09beba8cf1fc543f9a6dfe` is the `trace_id`, `64264ad70ec5d574` is the `span_id`, and `1` is the `sampled` flag.
+
+## Testing traces
+
+Hopefully, at this point you have everything set up and you are seeing traces in the Sentry UI.
+
+You can access individual traces by going to `https://contra.sentry.io/performance/trace/<trace_id>/`, e.g., https://contra.sentry.io/performance/trace/b6b9737b24de7ee9da135e90115a09df/.
+
+## Troubleshooting
+
+I am not going to be able to cover all possible issues that you might encounter. However, I _wish_ that I have troubleshooted in a sandbox first before trying to roll out the changes to the entire application. As mentioned earlier, you can just [fork the playground](https://github.com/gajus/sentry-tracing) and start experimenting there.
+
+## Instrumenting the application
+
+With all of the above in place, you should have a good understanding of how to enable tracing in your Node.js application and how to propagate the trace to the client-side application. You also already have traces for all the supported libraries. However, you might want to add custom spans to your application to track specific operations. You can do this using the `Sentry.startSpan` function.
+
+```ts
+export { startSpan } from '@sentry/opentelemetry';
+// or import { startSpan } from '@sentry/node';
+// I just prefer direct imports
+
+const randomNumber = await startSpan(
+  {
+    attributes: {
+      foo: 'bar',
+    },
+    name: 'generate random number',
+  },
+  () => {
+    return Math.random();
+  },
+);
+```
+
+This will create a span with the name `Sentry Trace Test` and the attribute `foo: bar`. The span will measure the time it takes to execute the function.
+
+## Adding attributes to the span
+
+You can also assign attributes to the span using the `setAttribute` function.
+
+```ts
+export { startSpan } from '@sentry/opentelemetry';
+
+const randomNumber = await startSpan(
+  {
+    name: 'generate random number',
+  },
+  (span) => {
+    const generatedNumber = Math.random();
+
+    span.setAttribute('generatedNumber', generatedNumber);
+
+    return generatedNumber;
+  },
+);
+```
+
+This will create a span with the name `Sentry Trace Test` and the attribute `randomNumber` with the value of the generated number.
+
+Attributes are useful for filtering and grouping traces in the Sentry UI.
+
+There is also `startInactiveSpan` and `startSpanManual` functions that you can use to create spans that are not automatically ended. I have not yet found a use case for these functions, but they are there if you need them.
