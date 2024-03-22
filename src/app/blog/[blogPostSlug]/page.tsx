@@ -169,7 +169,7 @@ export default async ({ params: { blogPostSlug } }: Props) => {
 
         <div
           className={css({
-            marginY: '16px',
+            my: '32px',
           })}
         >
           <div id="blog-post-body">
