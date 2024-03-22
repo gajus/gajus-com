@@ -211,6 +211,19 @@ You can access individual traces by going to `https://contra.sentry.io/performan
 
 I am not going to be able to cover all possible issues that you might encounter. However, I _wish_ that I have troubleshooted in a sandbox first before trying to roll out the changes to the entire application. As mentioned earlier, you can just [fork the playground](https://github.com/gajus/sentry-tracing) and start experimenting there.
 
+## Major gotcha with mixing @sentry/core and @sentry/opentemetry
+
+I am not even sure what's the difference between the two packages, but I've learned the hard way that, despite exporting near identical APIs for tracing, they are not interchagable.
+
+```ts
+export { startSpan } from '@sentry/core';
+export { startSpan } from '@sentry/opentelemetry';
+```
+
+As far as I can tell (based on observing what `@sentry/node` is [using](https://github.com/getsentry/sentry-javascript/blob/492f1156c66ce7c4015750de63c2cb7f371069c3/packages/node/src/index.ts#L65)), you should stick with `@sentry/core`.
+
+If you can, I would advise to just use `@sentry/node`, but the problem is that `@sentry/node` does not export all of the same tracing methods that `@sentry/core` does.
+
 ## Instrumenting the application
 
 With all of the above in place, you should have a good understanding of how to enable tracing in your Node.js application and how to propagate the trace to the client-side application. You also already have traces for all the supported libraries. However, you might want to add custom spans to your application to track specific operations. You can do this using the `Sentry.startSpan` function.
