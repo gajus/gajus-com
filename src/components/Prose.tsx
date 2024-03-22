@@ -77,6 +77,18 @@ export const Prose = ({ children }: PropsWithChildren) => {
         '& em': {
           fontStyle: 'italic',
         },
+        '& h2, & h3, & h4': {
+          '& a > code': {
+            background: '#eee',
+            borderRadius: '4px',
+            color: '#333',
+            display: 'inline-block',
+            fontFamily: 'monospace',
+            fontSize: '0.9em',
+            marginInline: '4px',
+            paddingInline: '8px',
+          },
+        },
         '& kbd': {
           background: 'code-background-100',
           borderRadius: '8px',
@@ -88,8 +100,8 @@ export const Prose = ({ children }: PropsWithChildren) => {
         '& p': {
           overflowWrap: 'break-word',
         },
-        '& p, & li, & h2, & h3, & h4': {
-          '& > a > code, & > code': {
+        '& p, & li': {
+          '& > code': {
             background: '#eee',
             borderRadius: '4px',
             color: '#333',
