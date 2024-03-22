@@ -22,7 +22,6 @@ const BlogPostingTag = ({ tag }: { readonly tag: Tag }) => {
   return (
     <div
       className={css({
-        // background: '#eee',
         border: '1px solid #ccc',
         borderRadius: '32px',
         fontSize: '12px',
@@ -147,29 +146,26 @@ export default async ({ params: { blogPostSlug } }: Props) => {
           className={css({
             base: {
               color: 'action-100',
-              fontWeight: '700',
+              fontWeight: '500',
             },
           })}
           dateTime={blogPostHead.publishedAt.toISOString()}
         >
           {blogPostHead.publishedAt.toDateString()}
         </time>
-        <PageTitle>{blogPostHead.title}</PageTitle>
-        <div
+        <h1
           className={css({
-            display: 'flex',
-            gap: '8px',
-            marginBottom: '32px',
-            marginTop: '16px',
+            fontSize: 'x6',
+            fontWeight: '700',
+            lineHeight: '1.5em',
+            marginBlockEnd: '0.5em',
+            smDown: {
+              fontSize: 'x5',
+            },
           })}
         >
-          {blogPostHead.tags.map((tag) => (
-            <BlogPostingTag
-              key={tag.name}
-              tag={tag}
-            />
-          ))}
-        </div>
+          {blogPostHead.title}
+        </h1>
 
         <div
           className={css({

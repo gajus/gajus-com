@@ -12,7 +12,10 @@ export const BlogPostList = ({
       className={css({
         display: 'grid',
         gap: '16px',
-        gridTemplateColumns: '1',
+        gridTemplateColumns: '2',
+        mdDown: {
+          gridTemplateColumns: '1',
+        },
       })}
     >
       {blogPostHeads.map((blogPost) => {
@@ -21,12 +24,12 @@ export const BlogPostList = ({
             <Link
               className={css({
                 _active: {
-                  background: '#E8EFFE',
+                  outline: '2px solid #0200FF',
                 },
                 _hover: {
-                  background: '#F8FAFE',
+                  outline: '2px solid #eee',
                 },
-                borderRadius: '8px',
+                borderRadius: '4px',
                 display: 'grid',
                 listStyle: 'none',
                 padding: '16px',
@@ -37,6 +40,7 @@ export const BlogPostList = ({
                 <time
                   className={css({
                     color: 'action-100',
+                    fontWeight: '500',
                   })}
                   dateTime={blogPost.publishedAt.toISOString()}
                 >
@@ -45,6 +49,7 @@ export const BlogPostList = ({
               </div>
               <div
                 className={css({
+                  fontSize: 'x4',
                   fontWeight: '700',
                 })}
               >

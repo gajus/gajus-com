@@ -29,29 +29,7 @@ export const SiteLayout = ({
       })}
       id="app"
     >
-      <div
-        className={css({
-          padding: '16px',
-        })}
-      >
-        <div>
-          <Link
-            className={css({
-              _hover: {
-                boxShadow: '0 2px 0 #000',
-                transition: 'box-shadow 200ms ease 0s',
-              },
-              fontWeight: '700',
-            })}
-            href="/"
-            title="Gajus"
-          >
-            Gajus
-          </Link>
-        </div>
-        <p>A source of truth for my thoughts about engineering and startups</p>
-      </div>
-      <div>{children}</div>
+      {children}
       <div
         className={css({
           marginY: '32px',
