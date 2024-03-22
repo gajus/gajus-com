@@ -222,7 +222,7 @@ export { startSpan } from '@sentry/opentelemetry';
 
 As far as I can tell (based on observing what `@sentry/node` is [using](https://github.com/getsentry/sentry-javascript/blob/492f1156c66ce7c4015750de63c2cb7f371069c3/packages/node/src/index.ts#L65)), you should stick with `@sentry/core`.
 
-If you can, I would advise to just use `@sentry/node`, but the problem is that `@sentry/node` does not export all of the same tracing methods that `@sentry/core` does.
+If you can, I would advise to just use `@sentry/node`, but the problem is that `@sentry/node` does not export all of the same tracing methods that `@sentry/core` does. For example, `@sentry/node` does not export `spanToTraceHeader` function that is used to render the `sentry-trace` meta tag.
 
 ## Instrumenting the application
 
