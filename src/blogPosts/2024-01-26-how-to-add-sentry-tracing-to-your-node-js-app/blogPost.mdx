@@ -211,7 +211,7 @@ You can access individual traces by going to `https://contra.sentry.io/performan
 
 I am not going to be able to cover all possible issues that you might encounter. However, I _wish_ that I have troubleshooted in a sandbox first before trying to roll out the changes to the entire application. As mentioned earlier, you can just [fork the playground](https://github.com/gajus/sentry-tracing) and start experimenting there.
 
-## Major gotcha with mixing @sentry/core and @sentry/opentemetry
+## Gotcha with mixing @sentry/core and @sentry/opentemetry
 
 I am not even sure what's the difference between the two packages, but I've learned the hard way that, despite exporting near identical APIs for tracing, they are not interchagable.
 
@@ -223,6 +223,14 @@ export { startSpan } from '@sentry/opentelemetry';
 As far as I can tell (based on observing what `@sentry/node` is [using](https://github.com/getsentry/sentry-javascript/blob/492f1156c66ce7c4015750de63c2cb7f371069c3/packages/node/src/index.ts#L65)), you should stick with `@sentry/core`.
 
 If you can, I would advise to just use `@sentry/node`, but the problem is that `@sentry/node` does not export all of the same tracing methods that `@sentry/core` does. For example, `@sentry/node` does not export `spanToTraceHeader` function that is used to render the `sentry-trace` meta tag.
+
+## Gotcha with ad blockers
+
+Sentry domain is unfortunately blocked by some ad blockers. This means that the traces will not be sent to Sentry if the user has an ad blocker enabled.
+
+If you are using an ad blocker or a browser extension that blocks requests to Sentry, you will not see traces in the Sentry UI.
+
+I had quite a few engineers report that they are not seeing traces for their sessions, and it turned out to be due to them using Brave browser.
 
 ## Instrumenting the application
 
