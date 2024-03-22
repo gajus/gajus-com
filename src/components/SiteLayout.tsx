@@ -36,7 +36,12 @@ export const SiteLayout = ({
           padding: '16px',
         })}
       >
-        <ul>
+        <ul
+          className={css({
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+          })}
+        >
           <li>
             <Link
               className={footerLink}
