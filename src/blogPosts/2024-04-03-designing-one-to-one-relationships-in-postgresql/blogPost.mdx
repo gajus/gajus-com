@@ -244,4 +244,34 @@ Here is a comparison of the options discussed above:
 
 Historically, I've used a separate table and identified the associated row in the table that owns the relationship (the B4 option) because it makes the relationship explicit and easy to understand. However, as demonstrated, it is not foolproof. Someone can still mistakenly construct a query that joins tables on a column other than the one that enforces the one-to-one relationship.
 
-The more I think about this problem, the more I am inclined to pick any option that allows to _identify the one-to-one relationship by reading the queries that reference the tables_ (options A and B3). This is because it is the most foolproof way to ensure that the one-to-one relationship can be easily identified and understood by anyone who reads the query, and it is the most likely to prevent someone from mistakenly converting the one-to-one relationship to one-to-many. 
+The more I think about this problem, the more I am inclined to pick any option that allows to _identify the one-to-one relationship by reading the queries that reference the tables_ (options A and B3).
+
+```sql
+-- Option A – can identify the one-to-one relationship by reading the query
+SELECT
+  ua1.id,
+  ua1.name,
+  ua1.hubspot_object_foreign_id
+FROM user_account ua1
+
+-- Option B3 – can identify the one-to-one relationship based on the "oto_" prefix
+SELECT
+  ua1.id,
+  ua1.name,
+  uaho1.hubspot_object_foreign_id
+FROM user_account ua1
+INNER JOIN oto_user_account_hubspot_object uaho1
+ON uaho1.user_account_id = ua1.id
+
+-- Option B4 – can also identify the one-to-one relationship by reading the query
+-- However, the problem with this approach that someone could still by mistake join on a column other than user_account_hubspot_object_id
+SELECT
+  ua1.id,
+  ua1.name,
+  uaho1.hubspot_object_foreign_id
+FROM user_account ua1
+INNER JOIN user_account_hubspot_object uaho1
+ON uaho1.id = ua1.user_account_hubspot_object_id
+```
+
+Options A and B4 are therefore the most foolproof way to ensure that the one-to-one relationship can be easily identified and understood by anyone who reads the query, and it is the most likely to prevent someone from mistakenly converting the one-to-one relationship to one-to-many. 
