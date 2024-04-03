@@ -41,6 +41,13 @@ This approach is simple and straightforward. If you only need to store a few add
 
 The main disadvantage of this approach is that it can lead to a bloated table. If you need to store a lot of additional information about the relationship between the user account and the HubSpot account, it might be better to create a separate table.
 
+### Performance considerations
+
+Adding additional columns to the existing table can have performance implications. If the `user_account` table is large and you frequently query it, adding additional columns can slow down your queries. This is because the additional columns will increase the size of each row, which can lead to more disk I/O and memory usage.
+
+> [!NOTE]
+> How many is too many? It depends on the type of data you are storing (see [PostgreSQL limits](https://www.postgresql.org/docs/current/limits.html)). If I had to give a rough estimate, I would say that if you foresee storing more than 100 columns, you should steer clear of this approach.
+
 ## Option 2: Create a separate table
 
 The second option is to create a separate table (`user_account_hubspot_object`) to store the HubSpot identifier.
@@ -157,8 +164,8 @@ ON uaho1.id = ua1.user_account_hubspot_object_id
 
 The disadvantage of this approach is that there is nothing stopping someone from unknowingly constructing a query that joins `user_account` and `user_account_hubspot_object` tables on a column other than `user_account_hubspot_object_id`. This can lead to bugs and incorrect results.
 
-
-
 ## The best approach
 
-There is no perfect way to enforce a one-to-one relationship between two tables in SQL. Historically, I've used the fourth approach (identifying the associated row in the table that owns the relationship) because it makes the relationship explicit and easy to understand. However, it is not foolproof. Whatever approach you choose, the most important thing is to pick one and stick with it. Consistency is key.
+The point of this article is to introduce you to the various ways you can design a one-to-one relationship in SQL and the trade-offs involved. The best approach depends on your specific use case and the constraints you are working with. Historically, I've used a separate table and identified the associated row in the table that owns the relationship (the 4th option) because it makes the relationship explicit and easy to understand. However, as demonstrated, it is not foolproof. Meanwhile, most SQL purists would argue that using a junction table to express the one-to-one relationship is wrong to begin with. They would argue that you should just add the additional columns to the existing table and be done with it. This is a valid point of view, but it doesn't work in all cases (see notes about performance).
+
+In the end, the best approach is the one that works best for your specific use case and your team's constraints. The most important thing is to be aware of the trade-offs involved, commit to a consistent approach, and document your decisions so that other developers can understand the database schema.
