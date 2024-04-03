@@ -14,7 +14,7 @@ SELECT
   ha1.hubspot_account_foreign_id,
   /* .. */
 FROM user_account ua1
-LEFT JOIN hubspot_account ha1 ON ea1.user_account_id = ua1.id
+LEFT JOIN hubspot_account ha1 ON ha1.user_account_id = ua1.id
 /* .. */
 ORDER BY ua1.id
 ```
@@ -42,7 +42,7 @@ SELECT
   ha1.hubspot_account_foreign_id,
   /* .. */
 FROM user_account ua1
-LEFT JOIN hubspot_account ha1 ON ea1.user_account_id = ua1.id
+LEFT JOIN hubspot_account ha1 ON ha1.user_account_id = ua1.id
 /* ... */
 ASSERT ua1.id IS UNIQUE
 ORDER BY ua1.id
