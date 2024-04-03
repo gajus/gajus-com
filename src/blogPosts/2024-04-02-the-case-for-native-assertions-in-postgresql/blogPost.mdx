@@ -9,14 +9,13 @@ title: The case for native assertions in PostgreSQL
 Once in a while, I encounter a query that looks something like this:
 
 ```sql
-SELECT
-  DISTINCT ua1.id,
+SELECT DISTINCT
+  ua1.id,
   ha1.hubspot_account_foreign_id,
   /* .. */
 FROM user_account ua1
 LEFT JOIN hubspot_account ha1 ON ha1.user_account_id = ua1.id
 /* .. */
-ORDER BY ua1.id
 ```
 
 The original author of this query probably intended to write a query that returns a list of user accounts with their associated HubSpot account. However, we can infer that the query assumes that there is a one-to-one relationship between user accounts and HubSpot accounts. However, even if that assumption is true at the time of writing, it might not be true in the future.
@@ -45,7 +44,6 @@ FROM user_account ua1
 LEFT JOIN hubspot_account ha1 ON ha1.user_account_id = ua1.id
 /* ... */
 ASSERT ua1.id IS UNIQUE
-ORDER BY ua1.id
 ```
 
 In this query, the `ASSERT` clause checks that the `ua1.id` column is unique within the returned dataset. If it is not, the query will throw an error. This way, the assumption that there is a one-to-one relationship between user accounts and HubSpot accounts is made explicit in the query itself. If this assumption is violated in the future, the query will throw an error, making the bug easier to catch.
