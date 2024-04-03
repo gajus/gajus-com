@@ -175,14 +175,14 @@ Here is a comparison of the options discussed above:
   <thead>
     <tr>
       <th rowspan="2">Criteria</th>
-      <th rowspan="2" class="center">Inline</th>
-      <th colspan="4" class="center">Separate Table</th>
+      <th rowspan="2" class="center">Inline (A)</th>
+      <th colspan="4" class="center">Separate Table (B)</th>
     </tr>
     <tr>
-      <th class="center">#1</th>
-      <th class="center">#2</th>
-      <th class="center">#3</th>
-      <th class="center">#4</th>
+      <th class="center">1</th>
+      <th class="center">2</th>
+      <th class="center">3</th>
+      <th class="center">4</th>
     </tr>
   </thead>
   <tbody>
@@ -242,6 +242,6 @@ Here is a comparison of the options discussed above:
 
 ## The best approach
 
-The point of this article is to introduce you to the various ways you can design a one-to-one relationship in SQL and the trade-offs involved. The best approach depends on your specific use case and the constraints you are working with. Historically, I've used a separate table and identified the associated row in the table that owns the relationship (the 4th option) because it makes the relationship explicit and easy to understand. However, as demonstrated, it is not foolproof. Meanwhile, most SQL purists (based on my conversations) would argue that using a junction table to express the one-to-one relationship is wrong to begin with. They would argue that you should just add the additional columns to the existing table and be done with it. This is a valid point of view, but it doesn't work in all cases (see notes about performance).
+Historically, I've used a separate table and identified the associated row in the table that owns the relationship (the B4 option) because it makes the relationship explicit and easy to understand. However, as demonstrated, it is not foolproof. Someone can still mistakenly construct a query that joins tables on a column other than the one that enforces the one-to-one relationship.
 
-In the end, the best approach is the one that works best for your specific use case and your team's constraints. The most important thing is to be aware of the trade-offs involved, commit to a consistent approach, and document your decisions so that other developers can understand the database schema.
+The more I think about this problem, the more I am inclined to pick any option that allows to _identify the one-to-one relationship by reading the queries that reference the tables_ (options A and B3). This is because it is the most foolproof way to ensure that the one-to-one relationship can be easily identified and understood by anyone who reads the query, and it is the most likely to prevent someone from mistakenly converting the one-to-one relationship to one-to-many. 
