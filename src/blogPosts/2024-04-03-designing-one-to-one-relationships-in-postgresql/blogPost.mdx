@@ -23,7 +23,7 @@ A business requirement emerged that we need to sync the user's account with an e
 
 The first decision we need to make is how to store this identifier in our database. There are two common ways to do this:
 
-## Option 1: Add a column to the existing table
+## Option A: Add a column to the existing table
 
 The first option is to add a column to the existing `user_account` table.
 
@@ -48,7 +48,7 @@ Adding additional columns to the existing table can have performance implication
 > [!NOTE]
 > How many is too many? It depends on the type of data you are storing (see [PostgreSQL limits](https://www.postgresql.org/docs/current/limits.html)). If I had to give a rough estimate, I would say that if you foresee storing more than 100 columns, you should steer clear of this approach.
 
-## Option 2: Create a separate table
+## Option B: Create a separate table
 
 The second option is to create a separate table (`user_account_hubspot_object`) to store the HubSpot identifier.
 
