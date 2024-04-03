@@ -192,7 +192,7 @@ export default async ({ params: { blogPostSlug } }: Props) => {
                       color: 'action-100',
                     })}
                     data-level={heading.level}
-                    href={heading.slug}
+                    href={'#' + heading.slug}
                   >
                     {heading.text}
                   </a>
