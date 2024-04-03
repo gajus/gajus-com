@@ -111,16 +111,15 @@ export const Prose = ({ children }: PropsWithChildren) => {
         '& p': {
           overflowWrap: 'break-word',
         },
-        '& p, & li': {
+        '& p, & li, & table td': {
           '& > code': {
             background: '#eee',
             borderRadius: '4px',
             color: '#d73a4a',
-            display: 'inline-block',
             fontFamily: 'monospace',
             fontSize: '0.9em',
-            marginInline: '4px',
-            paddingInline: '8px',
+            paddingBlock: '2px',
+            paddingInline: '4px',
           },
         },
         '& table': {
@@ -129,12 +128,14 @@ export const Prose = ({ children }: PropsWithChildren) => {
           },
           '& th, & td': {
             border: '1px solid #3E3E43',
+            fontSize: '16px',
+            lineHeight: '1.5',
             md: {
-              paddingX: '16px',
-              paddingY: '8px',
+              paddingX: '8px',
+              paddingY: '4px',
             },
             smDown: {
-              padding: '8px',
+              padding: '4px',
             },
             textAlign: 'left',
           },

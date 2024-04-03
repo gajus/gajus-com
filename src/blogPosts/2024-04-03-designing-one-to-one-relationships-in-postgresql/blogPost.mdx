@@ -1,0 +1,146 @@
+---
+description: Learn how to design one-to-one relationships in PostgreSQL.
+guid: 4ebdb30d-cdb2-441d-af59-5059b6959d40
+publishedAt: 2024-04-03 17:16:57
+tags: [engineering]
+title: Designing one-to-one relationships in PostgreSQL
+---
+
+Once in a while, you might need to design a one-to-one relationship in SQL. This is a common pattern in database design, but it's not always straightforward to implement. In this article, I'll explain how to design one-to-one relationships in SQL and discuss some common pitfalls to avoid.
+
+## What is a one-to-one relationship?
+
+Let's define a clear use case for a one-to-one relationship.
+
+Suppose you have `user_account` table.
+
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| `id`          | `integer`    | Primary key |
+| `name`        | `text`      | User's name |
+
+A business requirement emerged that we need to sync the user's account with an external system (e.g. HubSpot). HubSpot assigns a unique identifier to each user, and we need to store this identifier in our database. We will call this identifier `hubspot_object_foreign_id`.
+
+The first decision we need to make is how to store this identifier in our database. There are two common ways to do this:
+
+## Option 1: Add a column to the existing table
+
+The first option is to add a column to the existing `user_account` table.
+
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| `id`          | `integer`    | Primary key |
+| `name`        | `text`      | User's name |
+| `hubspot_object_foreign_id` | `text` | HubSpot's unique identifier |
+| `hubspot_synced_at` | `timestamp with time zone` | Last time the user was synced with HubSpot |
+
+This approach is simple and straightforward. If you only need to store a few additional columns, this is the way to go.
+
+> [!NOTE]
+> If you choose this option, you should add a unique constraint to the `hubspot_object_foreign_id` column to ensure that each user has a unique identifier.
+
+The main disadvantage of this approach is that it can lead to a bloated table. If you need to store a lot of additional information about the relationship between the user account and the HubSpot account, it might be better to create a separate table.
+
+## Option 2: Create a separate table
+
+The second option is to create a separate table (`user_account_hubspot_object`) to store the HubSpot identifier.
+
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| `id`          | `integer`    | Primary key |
+| `user_account_id` | `integer` | Foreign key to `user_account` |
+| `hubspot_object_foreign_id` | `text` | HubSpot's unique identifier |
+| `hubspot_synced_at` | `timestamp with time zone` | Last time the user was synced with HubSpot |
+| `synced_phone_number` | `text` | User's phone number (data from HubSpot) |
+
+The advantage of this approach is that it allows you to store additional information about the relationship between the user account and the HubSpot account. For example, in case of a two-way sync, you might need to store data that was added to HubSpot profile (`synced_phone_number`).
+
+The disadvantages of this approach:
+
+* It requires an additional join to retrieve the HubSpot identifier.
+* It introduces an additional table, which can complicate the database schema.
+* It requires additional logic to enforce the one-to-one relationship between the `user_account` and `user_account_hubspot_object` tables.
+
+Option 2 is enticing because it keeps the `user_account` table clean and allows you to store additional information about the relationship between the user account and the HubSpot account. However, it introduces a new problem: how do you enforce the one-to-one relationship between the `user_account` and `user_account_hubspot_object` tables?
+
+## Enforcing one-to-one relationship
+
+This is where things get tricky. In SQL, there is no built-in way to enforce a one-to-one relationship between two tables.
+
+You have a few options to enforce the one-to-one relationship (neither of them is perfect):
+
+### Option 1: Use a unique index
+
+You can add a unique index to the `user_account_id` column in the `user_account_hubspot_object` table. This will ensure that each user account has at most one corresponding HubSpot object.
+
+```sql
+CREATE UNIQUE INDEX user_account_hubspot_object_user_account_id_idx
+ON user_account_hubspot_object (user_account_id);
+```
+
+The disadvantages of this approach is that there is no way to tell just by looking at the query referencing the `user_account_hubspot_object` table that it is a one-to-one relationship. You have to rely on the fact that the unique index is there. This can lead to the confusion and bugs down the line. Example: suppose that somewhere in our application we have a query that joins `user_account` and `user_account_hubspot_object` tables.
+
+```sql
+SELECT
+  ua1.id,
+  ua1.name,
+  uaho1.hubspot_object_foreign_id
+FROM user_account ua1
+INNER JOIN user_account_hubspot_object uaho1
+ON uaho1.user_account_id = ua1.id
+/* ... */
+```
+
+Now suppose that a new business requirement emerges that if a HubSpot object is deleted, the corresponding relation in the `user_account_hubspot_object` table should be marked as deleted. The developer who is tasked to implement this requirement might not be aware aware (have access to) every code path that references the `user_account_hubspot_object` table. As a result, they might think it is safe to drop the unique index and add a `deleted_at` column to the `user_account_hubspot_object` table. This will break the one-to-one relationship between the `user_account` and `user_account_hubspot_object` tables. Every query that references this table will now produce incorrect results.
+
+### Option 2: Use a unique index and a naming convention
+
+You can somewhat mitigate the risk of the latter scenario by using a naming convention that indicates that the relationship is one-to-one. For example, you can prefix the table name with `oto_` (one-to-one).
+
+It is a lot easier to spot the one-to-one relationship in the query if the table name is `oto_user_account_hubspot_object` instead of `user_account_hubspot_object`.
+
+This approach also makes it clear to whoever reads the query that the relationship between the `user_account` and `user_account_hubspot_object` tables is one-to-one. Example:
+
+```sql
+SELECT
+  ua1.id,
+  ua1.name,
+  uaho1.hubspot_object_foreign_id
+FROM user_account ua1
+INNER JOIN oto_user_account_hubspot_object uaho1
+ON uaho1.user_account_id = ua1.id
+/* ... */
+```
+
+If you have a naming convention that indicates that the relationship is one-to-one, it will be easier for developers to understand the relationship between the tables. However, this approach is not foolproof. Developers can still drop the unique index without understanding the implications.
+
+### Option 3: Identify the associated row in the table that owns the relationship
+
+You can enforce the one-to-one relationship by mandating that the table that owns the relationship (in our case, `user_account`) has a column that references the associated row in the other table (`user_account_hubspot_object`), e.g.
+
+`user_account` table:
+
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| `id`          | `integer`    | Primary key |
+| `name`        | `text`      | User's name |
+| `user_account_hubspot_object_id` | `integer` | Foreign key to `user_account_hubspot_object` |
+
+This is my preferred approach because it allows `user_account` itself to document the relationship with `user_account_hubspot_object`. It also makes it clear to whoever reads the query that the relationship between the `user_account` and `user_account_hubspot_object` tables is one-to-one. Example:
+
+```sql
+SELECT
+  ua1.id,
+  ua1.name,
+  uaho1.hubspot_object_foreign_id
+FROM user_account ua1
+INNER JOIN user_account_hubspot_object uaho1
+ON uaho1.id = ua1.user_account_hubspot_object_id
+/* ... */
+```
+
+The disadvantage of this approach is that there is nothing stopping someone from unknowingly constructing a query that joins `user_account` and `user_account_hubspot_object` tables on a column other than `user_account_hubspot_object_id`. This can lead to bugs and incorrect results.
+
+## The best approach
+
+There is no perfect way to enforce a one-to-one relationship between two tables in SQL. Historically, I've used the third approach (identifying the associated row in the table that owns the relationship) because it makes the relationship explicit and easy to understand. However, it is not foolproof. Whatever approach you choose, the most important thing is to pick one and stick with it. Consistency is key.
