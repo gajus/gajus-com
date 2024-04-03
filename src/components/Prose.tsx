@@ -127,6 +127,12 @@ export const Prose = ({ children }: PropsWithChildren) => {
             fontWeight: '600',
           },
           '& th, & td': {
+            '&.center': {
+              textAlign: 'center',
+            },
+            '&.nobr': {
+              whiteSpace: 'nowrap',
+            },
             border: '1px solid #3E3E43',
             fontSize: '16px',
             lineHeight: '1.5',

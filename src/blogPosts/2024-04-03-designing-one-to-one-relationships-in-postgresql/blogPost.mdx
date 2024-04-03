@@ -164,6 +164,79 @@ ON uaho1.id = ua1.user_account_hubspot_object_id
 
 The disadvantage of this approach is that there is nothing stopping someone from unknowingly constructing a query that joins `user_account` and `user_account_hubspot_object` tables on a column other than `user_account_hubspot_object_id`. This can lead to bugs and incorrect results.
 
+## Comparison of the options
+
+Here is a comparison of the options discussed above:
+
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">Criteria</th>
+      <th rowspan="2" class="center">Inline</th>
+      <th colspan="4" class="center">Separate Table</th>
+    </tr>
+    <tr>
+      <th class="center">#1</th>
+      <th class="center">#2</th>
+      <th class="center">#3</th>
+      <th class="center">#4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Relies on a naming convention to indicate one-to-one relationship, e.g. <code>oto_</code></td>
+      <td class="nobr">No</td>
+      <td class="nobr">No</td>
+      <td class="nobr">No</td>
+      <td class="nobr">Yes</td>
+      <td class="nobr">Yes</td>
+    </tr>
+    <tr>
+      <td>Additional columns are stored in the same table</td>
+      <td class="nobr">Yes</td>
+      <td class="nobr">No</td>
+      <td class="nobr">No</td>
+      <td class="nobr">No</td>
+      <td class="nobr">Yes</td>
+    </tr>
+    <tr>
+      <td>Has performance implications as the number of columns increases</td>
+      <td class="nobr">Yes / 👺</td>
+      <td class="nobr">No / 👼</td>
+      <td class="nobr">No / 👼</td>
+      <td class="nobr">No / 👼</td>
+      <td class="nobr">No / 👼</td>
+    </tr>
+    <tr>
+      <td>One-to-one relationship is visible in queries that references tables, e.g. <code>oto_</code> or <code>user_account_hubspot_object_id</code></td>
+      <td class="nobr">Yes / 👼</td>
+      <td class="nobr">No / 👺</td>
+      <td class="nobr">No / 👺</td>
+      <td class="nobr">Yes / 👼</td>
+      <td class="nobr">Yes / 👼</td>
+    </tr>
+    <tr>
+      <td>Easy to mistakenly construct a query that joins tables on a column other than the one that enforces the one-to-one relationship</td>
+      <td class="nobr">No / 👼</td>
+      <td class="nobr">Yes / 👺</td>
+      <td class="nobr">No / 👼</td>
+      <td class="nobr">Yes / 👺</td>
+      <td class="nobr">Yes / 👺</td>
+    </tr>
+    <tr>
+      <td>Easy to mistakenly convert the one-to-one relationship to one-to-many</td>
+      <td class="nobr">No / 👼</td>
+      <td class="nobr">Yes / 👺</td>
+      <td class="nobr">No / 👼</td>
+      <td class="nobr">No / 👼</td>
+      <td class="nobr">Yes / 👺</td>
+    </tr>
+  </tbody>
+</table>
+
+👼 - Desirable
+👺 - Undesirable
+
 ## The best approach
 
 The point of this article is to introduce you to the various ways you can design a one-to-one relationship in SQL and the trade-offs involved. The best approach depends on your specific use case and the constraints you are working with. Historically, I've used a separate table and identified the associated row in the table that owns the relationship (the 4th option) because it makes the relationship explicit and easy to understand. However, as demonstrated, it is not foolproof. Meanwhile, most SQL purists would argue that using a junction table to express the one-to-one relationship is wrong to begin with. They would argue that you should just add the additional columns to the existing table and be done with it. This is a valid point of view, but it doesn't work in all cases (see notes about performance).
