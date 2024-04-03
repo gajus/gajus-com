@@ -93,7 +93,23 @@ ON uaho1.user_account_id = ua1.id
 
 Now suppose that a new business requirement emerges that if a HubSpot object is deleted, the corresponding relation in the `user_account_hubspot_object` table should be marked as deleted. The developer who is tasked to implement this requirement might not be aware aware (have access to) every code path that references the `user_account_hubspot_object` table. As a result, they might think it is safe to drop the unique index and add a `deleted_at` column to the `user_account_hubspot_object` table. This will break the one-to-one relationship between the `user_account` and `user_account_hubspot_object` tables. Every query that references this table will now produce incorrect results.
 
-### Option 2: Use a unique index and a naming convention
+### Option 2: Using foreign key as the primary key
+
+You can enforce the one-to-one relationship by using the foreign key as the primary key in the `user_account_hubspot_object` table.
+
+Our `user_account_hubspot_object` table would look like this:
+
+| Column Name | Data Type | Description |
+|-------------|-----------|-------------|
+| `user_account_id` | `integer` | Primary key and foreign key to `user_account` |
+| `hubspot_object_foreign_id` | `text` | HubSpot's unique identifier |
+| `hubspot_synced_at` | `timestamp with time zone` | Last time the user was synced with HubSpot |
+
+This approach enforces the one-to-one relationship between the `user_account` and `user_account_hubspot_object` tables. The table design makes it clear that `user_account_id` is the primary key and therefore it is highly unlikely that this table would ever be refactored to support a one-to-many relationship.
+
+However, just like the 1st option, this approach has the disadvantage that there is no way to tell just by looking at the query referencing the `user_account_hubspot_object` table that it is a one-to-one relationship.
+
+### Option 3: Use a unique index and a naming convention
 
 You can somewhat mitigate the risk of the latter scenario by using a naming convention that indicates that the relationship is one-to-one. For example, you can prefix the table name with `oto_` (one-to-one).
 
@@ -114,7 +130,7 @@ ON uaho1.user_account_id = ua1.id
 
 If you have a naming convention that indicates that the relationship is one-to-one, it will be easier for developers to understand the relationship between the tables. However, this approach is not foolproof. Developers can still drop the unique index without understanding the implications.
 
-### Option 3: Identify the associated row in the table that owns the relationship
+### Option 4: Identify the associated row in the table that owns the relationship
 
 You can enforce the one-to-one relationship by mandating that the table that owns the relationship (in our case, `user_account`) has a column that references the associated row in the other table (`user_account_hubspot_object`), e.g.
 
@@ -141,6 +157,8 @@ ON uaho1.id = ua1.user_account_hubspot_object_id
 
 The disadvantage of this approach is that there is nothing stopping someone from unknowingly constructing a query that joins `user_account` and `user_account_hubspot_object` tables on a column other than `user_account_hubspot_object_id`. This can lead to bugs and incorrect results.
 
+
+
 ## The best approach
 
-There is no perfect way to enforce a one-to-one relationship between two tables in SQL. Historically, I've used the third approach (identifying the associated row in the table that owns the relationship) because it makes the relationship explicit and easy to understand. However, it is not foolproof. Whatever approach you choose, the most important thing is to pick one and stick with it. Consistency is key.
+There is no perfect way to enforce a one-to-one relationship between two tables in SQL. Historically, I've used the fourth approach (identifying the associated row in the table that owns the relationship) because it makes the relationship explicit and easy to understand. However, it is not foolproof. Whatever approach you choose, the most important thing is to pick one and stick with it. Consistency is key.
