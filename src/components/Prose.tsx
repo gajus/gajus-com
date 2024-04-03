@@ -5,6 +5,17 @@ export const Prose = ({ children }: PropsWithChildren) => {
   return (
     <div
       className={css({
+        '& .note-block': {
+          _before: {
+            color: '#666',
+            content: '"Note"',
+            display: 'inline-block',
+            fontWeight: '600',
+            marginRight: '8px',
+          },
+          borderLeft: '4px solid #999',
+          padding: '8px 16px',
+        },
         '& > * + *': {
           marginTop: '16px',
         },
@@ -111,10 +122,6 @@ export const Prose = ({ children }: PropsWithChildren) => {
             marginInline: '4px',
             paddingInline: '8px',
           },
-        },
-        '& .note-block': {
-          borderLeft: '4px solid #999',
-          padding: '8px 16px',
         },
         '& table': {
           '& th, & td': {
