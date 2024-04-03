@@ -112,6 +112,10 @@ export const Prose = ({ children }: PropsWithChildren) => {
             paddingInline: '8px',
           },
         },
+        '& .note-block': {
+          borderLeft: '4px solid #999',
+          padding: '8px 16px',
+        },
         '& table': {
           '& th, & td': {
             border: '1px solid #3E3E43',

@@ -1,8 +1,38 @@
 import { defineDocumentType, makeSource } from 'contentlayer/source-files';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
+import remarkDirective from 'remark-directive';
 import remarkFootnotes from 'remark-footnotes';
 import remarkGfm from 'remark-gfm';
+import remarkGithubAdmonitionsToDirectives from 'remark-github-admonitions-to-directives';
+import { h } from 'hastscript'
+import { visit } from 'unist-util-visit'
+
+const notePlugin = () => {
+  /**
+   * @see https://github.com/remarkjs/remark-directive?tab=readme-ov-file#example-styled-blocks
+   * @see https://github.com/orgs/community/discussions/16925
+   */
+  return (tree) => {
+    visit(tree, (node) => {
+      if (
+        node.type === 'containerDirective' ||
+        node.type === 'leafDirective' ||
+        node.type === 'textDirective'
+      ) {
+        if (node.name !== 'note') return
+
+        console.log('Hello!', node);
+
+        const data = node.data || (node.data = {})
+        const tagName = node.type === 'textDirective' ? 'span' : 'div'
+
+        data.hName = tagName
+        data.hProperties = h(tagName, { class: 'note-block' }).properties
+      }
+    })
+  }
+};
 
 export const Post = defineDocumentType(() => ({
   computedFields: {
@@ -52,6 +82,15 @@ export default makeSource({
         },
       ],
     ],
-    remarkPlugins: [[remarkFootnotes, { inlineNotes: true }], remarkGfm],
+    remarkPlugins: [
+      remarkGithubAdmonitionsToDirectives,
+      remarkDirective,
+      [
+        remarkFootnotes,
+        { inlineNotes: true },
+      ],
+      remarkGfm,
+      notePlugin,
+    ],
   },
 });
