@@ -79,7 +79,7 @@ This is where things get tricky. In SQL, there is no built-in way to enforce a o
 You have a few options to enforce the one-to-one relationship (neither of them is perfect):
 
 <a id="option-b1"></a>
-### Option 1: Use a unique index
+### Option B1: Use a unique index
 
 You can add a unique index to the `user_account_id` column in the `user_account_hubspot_object` table. This will ensure that each user account has at most one corresponding HubSpot object.
 
@@ -107,7 +107,7 @@ Now suppose that a new business requirement emerges that if a HubSpot object is 
 > This wouldn't be such a huge problem if PostgreSQL natively supported [assertions about the query output](https://gajus.com/blog/the-case-for-native-assertions-in-postgresql). However, it doesn't, so we have to be extra careful when picking this approach.
 
 <a id="option-b2"></a>
-### Option 2: Using foreign key as the primary key
+### Option B2: Using foreign key as the primary key
 
 You can enforce the one-to-one relationship by using the foreign key as the primary key in the `user_account_hubspot_object` table.
 
@@ -124,7 +124,7 @@ This approach enforces the one-to-one relationship between the `user_account` an
 However, just like the 1st option, this approach has the disadvantage that there is no way to tell just by looking at the query referencing the `user_account_hubspot_object` table that it is a one-to-one relationship.
 
 <a id="option-b3"></a>
-### Option 3: Use a unique index and a naming convention
+### Option B3: Use a unique index and a naming convention
 
 You can somewhat mitigate the risk of the latter scenario by using a naming convention that indicates that the relationship is one-to-one. For example, you can prefix the table name with `oto_` (one-to-one).
 
@@ -146,7 +146,7 @@ ON uaho1.user_account_id = ua1.id
 If you have a naming convention that indicates that the relationship is one-to-one, it will be easier for developers to understand the relationship between the tables. However, this approach is not foolproof. Developers can still drop the unique index without understanding the implications.
 
 <a id="option-b4"></a>
-### Option 4: Identify the associated row in the table that owns the relationship
+### Option B4: Identify the associated row in the table that owns the relationship
 
 You can enforce the one-to-one relationship by mandating that the table that owns the relationship (in our case, `user_account`) has a column that references the associated row in the other table (`user_account_hubspot_object`), e.g.
 
