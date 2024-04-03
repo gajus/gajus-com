@@ -20,7 +20,14 @@ LEFT JOIN hubspot_account ha1 ON ha1.user_account_id = ua1.id
 
 The original author of this query probably intended to write a query that returns a list of user accounts with their associated HubSpot account. However, we can infer that the query assumes that there is a one-to-one relationship between user accounts and HubSpot accounts. However, even if that assumption is true at the time of writing, it might not be true in the future.
 
-Let's say that the `hubspot_account` table records one-to-one relationships between user accounts and HubSpot accounts. This might be enforced by a unique constraint on the `hubspot_account.user_account_id` column. In this case, the query above will return one row for each user account, as expected. However, that constraint might be removed in the future, and the query will start returning multiple user account records with a unique HubSpot account for each user account. This would lead to subtle bugs that are hard to catch.
+Let's say that the `hubspot_account` table records one-to-one relationships between user accounts and HubSpot accounts. This might be enforced by a unique constraint on the `hubspot_account.user_account_id` column. In this case, the query above will return one row for each user account, as expected. However, that constraint might be removed in the future, and the query will start returning multiple user account records with a unique HubSpot account for each user account.
+
+| id | hubspot_account_foreign_id |
+|----|----------------------------|
+| 1  | 75cce832                   |
+| 1  | 6e779469                   |
+
+This would lead to subtle bugs that are hard to catch.
 
 > [!NOTE]
 > `DISTINCT ON` would be even more dangerous in this case, as it would return a random HubSpot account for each user account. But since it would return only one row per user account, it might not be immediately obvious that there is a problem.

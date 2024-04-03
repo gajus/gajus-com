@@ -124,6 +124,9 @@ export const Prose = ({ children }: PropsWithChildren) => {
           },
         },
         '& table': {
+          '& th': {
+            fontWeight: '600',
+          },
           '& th, & td': {
             border: '1px solid #3E3E43',
             md: {
