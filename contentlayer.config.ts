@@ -1,12 +1,12 @@
 import { defineDocumentType, makeSource } from 'contentlayer/source-files';
+import { h } from 'hastscript';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
 import remarkDirective from 'remark-directive';
 import remarkFootnotes from 'remark-footnotes';
 import remarkGfm from 'remark-gfm';
 import remarkGithubAdmonitionsToDirectives from 'remark-github-admonitions-to-directives';
-import { h } from 'hastscript'
-import { visit } from 'unist-util-visit'
+import { visit } from 'unist-util-visit';
 
 const notePlugin = () => {
   /**
@@ -20,18 +20,16 @@ const notePlugin = () => {
         node.type === 'leafDirective' ||
         node.type === 'textDirective'
       ) {
-        if (node.name !== 'note') return
+        if (node.name !== 'note') return;
 
-        console.log('Hello!', node);
+        const data = node.data || (node.data = {});
+        const tagName = node.type === 'textDirective' ? 'span' : 'div';
 
-        const data = node.data || (node.data = {})
-        const tagName = node.type === 'textDirective' ? 'span' : 'div'
-
-        data.hName = tagName
-        data.hProperties = h(tagName, { class: 'note-block' }).properties
+        data.hName = tagName;
+        data.hProperties = h(tagName, { class: 'note-block' }).properties;
       }
-    })
-  }
+    });
+  };
 };
 
 export const Post = defineDocumentType(() => ({
@@ -85,10 +83,7 @@ export default makeSource({
     remarkPlugins: [
       remarkGithubAdmonitionsToDirectives,
       remarkDirective,
-      [
-        remarkFootnotes,
-        { inlineNotes: true },
-      ],
+      [remarkFootnotes, { inlineNotes: true }],
       remarkGfm,
       notePlugin,
     ],
