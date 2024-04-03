@@ -10,6 +10,13 @@ export const BlogPostHeadZodSchema = z.object({
   author: AuthorZodSchema,
   description: z.string(),
   guid: z.string(),
+  headings: z.array(
+    z.object({
+      level: z.number(),
+      slug: z.string().optional(),
+      text: z.string(),
+    }),
+  ),
   publishedAt: z.date(),
   slug: z.string(),
   tags: z.array(TagZodSchema),

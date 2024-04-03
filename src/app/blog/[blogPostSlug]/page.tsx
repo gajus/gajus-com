@@ -1,14 +1,12 @@
 import { BlogPostingJsonLd } from '@/components/BlogPostingJsonLd';
 import { Comments } from '@/components/Comments';
 import { Link } from '@/components/Link';
-import { PageTitle } from '@/components/PageTitle';
 import { Prose } from '@/components/Prose';
 import { SiteLayout } from '@/components/SiteLayout';
 import { findBlogPostHead } from '@/routines/findBlogPostHead';
 import { getBlogPostBody } from '@/routines/getBlogPostBody';
 import { css } from '@/styles';
 import { omit } from '@/utilities/omit';
-import { type Tag } from '@/zodSchemas/TagZodSchema';
 import { type MDXComponents } from 'mdx/types';
 import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -16,21 +14,6 @@ import { useMDXComponent } from 'next-contentlayer/hooks';
 
 type Props = {
   readonly params: { blogPostSlug: string };
-};
-
-const BlogPostingTag = ({ tag }: { readonly tag: Tag }) => {
-  return (
-    <div
-      className={css({
-        border: '1px solid #ccc',
-        borderRadius: '32px',
-        fontSize: '12px',
-        padding: '0 16px',
-      })}
-    >
-      {tag.name}
-    </div>
-  );
 };
 
 const anchorLink = css({
@@ -166,6 +149,58 @@ export default async ({ params: { blogPostSlug } }: Props) => {
         >
           {blogPostHead.title}
         </h1>
+
+        <div
+          className={css({
+            my: '32px',
+          })}
+        >
+          <h3
+            className={css({
+              color: '#666',
+              fontSize: 'x2',
+            })}
+          >
+            On this page
+          </h3>
+          <ul
+            className={css({
+              fontSize: 'x2',
+              lineHeight: '1.5em',
+            })}
+          >
+            {blogPostHead.headings.map((heading) => {
+              return (
+                <li key={`#${heading.slug}`}>
+                  <a
+                    className={css({
+                      '& > code': {
+                        color: '#333',
+                        fontFamily: 'monospace',
+                      },
+                      '&:hover': {
+                        boxShadow: '0 1px 0 #0200FF',
+                        transition: 'box-shadow 200ms ease 0s',
+                      },
+                      '&[data-level="3"]': {
+                        marginLeft: '16px',
+                      },
+                      '&[data-level="4"]': {
+                        marginLeft: '32px',
+                      },
+                      boxShadow: '0 1px 0 rgb(2, 0, 255, 0.2)',
+                      color: 'action-100',
+                    })}
+                    data-level={heading.level}
+                    href={heading.slug}
+                  >
+                    {heading.text}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
 
         <div
           className={css({

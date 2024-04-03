@@ -1,4 +1,5 @@
 import { defineDocumentType, makeSource } from 'contentlayer/source-files';
+import GithubSlugger from 'github-slugger';
 import { h } from 'hastscript';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
@@ -34,6 +35,26 @@ const notePlugin = () => {
 
 export const Post = defineDocumentType(() => ({
   computedFields: {
+    headings: {
+      resolve: async ({ body }) => {
+        const regXHeader = /\n(?<flag>#{1,6})\s+(?<content>.+)/gu;
+        const slugger = new GithubSlugger();
+        const headings = Array.from(body.raw.matchAll(regXHeader)).map(
+          // @ts-expect-error - TS doesn't know about named groups yet
+          ({ groups }) => {
+            const flag = groups?.flag;
+            const content = groups?.content;
+            return {
+              level: flag.length,
+              slug: content ? slugger.slug(content) : undefined,
+              text: content,
+            };
+          },
+        );
+        return headings;
+      },
+      type: 'json',
+    },
     url: {
       resolve: (post) => `/posts/${post._raw.flattenedPath}`,
       type: 'string',
