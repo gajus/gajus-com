@@ -81,7 +81,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
           '& a > code': {
             background: '#eee',
             borderRadius: '4px',
-            color: '#333',
+            color: '#d73a4a',
             display: 'inline-block',
             fontFamily: 'monospace',
             fontSize: '0.9em',
@@ -104,7 +104,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
           '& > code': {
             background: '#eee',
             borderRadius: '4px',
-            color: '#333',
+            color: '#d73a4a',
             display: 'inline-block',
             fontFamily: 'monospace',
             fontSize: '0.9em',
