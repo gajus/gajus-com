@@ -274,4 +274,21 @@ INNER JOIN user_account_hubspot_object uaho1
 ON uaho1.id = ua1.user_account_hubspot_object_id
 ```
 
-Options A and B4 are therefore the most foolproof way to ensure that the one-to-one relationship can be easily identified and understood by anyone who reads the query, and it is the most likely to prevent someone from mistakenly converting the one-to-one relationship to one-to-many. 
+Options A and B4 are therefore the most foolproof way to ensure that the one-to-one relationship can be easily identified and understood by anyone who reads the query, and it is the most likely to prevent someone from mistakenly converting the one-to-one relationship to one-to-many.
+
+## Side note: It is a big project problem
+
+What's interesting is that the need to have a convention that expresses the one-to-one relationship in queries was not a problem in most of the projects I've worked on. This only became a problem when I realized during code reviews that we are making assumptions about the relationships between the tables based on our current _business logic_ and not based on the database schema. Example:
+
+```sql
+SELECT
+  o1.id,
+  ot1.name
+FROM organization o1
+INNER JOIN organization_team ot1
+ON ot1.organization_id = o1.id
+```
+
+It is a fair assumption that the `organization_team` table is a one-to-one relationship if you are _certain_ that the program only allows one team per organization. Perhaps today, there is no way to create multiple teams per organization in the application. Therefore, the assumption is true _today_. However, what happens when the business requirements change and the program is refactored to allow multiple teams per organization? The query above would still work, but it would produce incorrect results.
+
+It is impossible to predict the future and every possible way the program can be refactored. However, we can strive to adopt conventions that help us to understand the original intent of the code and prevent accidental misuse. In this case, a convention such as outlined in B3 would have either avoided the above query to be written as an `INNER JOIN` or would have made it clear that the relationship between the `organization` and `organization_team` tables is one-to-one.
