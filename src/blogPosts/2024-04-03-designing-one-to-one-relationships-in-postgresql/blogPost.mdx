@@ -145,6 +145,9 @@ ON uaho1.user_account_id = ua1.id
 
 If you have a naming convention that indicates that the relationship is one-to-one, it will be easier for developers to understand the relationship between the tables. However, this approach is not foolproof. Developers can still drop the unique index without understanding the implications.
 
+> [!NOTE]
+> You might also consider a convention that glues the two tables together using a custom string, e.g. `table1_oto_table2`. The benefit of this approach is that it also makes it clear which two tables are in the relationship. This is especially true with long table names, e.g. `oto_user_account_stripe_merchant_customer_organization_member_invite` VS `user_account_stripe_merchant_customer_oto_organization_member_invite`
+
 <a id="option-b4"></a>
 ### Option B4: Identify the associated row in the table that owns the relationship
 
