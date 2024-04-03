@@ -282,7 +282,7 @@ ON uaho1.id = ua1.user_account_hubspot_object_id
 
 Options [A](#option-a) and [B4](#option-b4) are therefore the most foolproof way to ensure that the one-to-one relationship can be easily identified and understood by anyone who reads the query, and it is the most likely to prevent someone from mistakenly converting the one-to-one relationship to one-to-many.
 
-## Side note: It is a big project problem
+## Side note: It is a "big project" problem
 
 What's interesting is that the need to have a convention that expresses the one-to-one relationship in queries was not a problem in most of the projects I've worked on. This only became a problem when I realized during code reviews that we are making assumptions about the relationships between the tables based on our current _business logic_ and not based on the database schema. Example:
 
