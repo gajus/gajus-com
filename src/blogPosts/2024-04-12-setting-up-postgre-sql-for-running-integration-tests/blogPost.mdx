@@ -108,6 +108,8 @@ Time: 87.168 ms
 
 This is a significant improvement and makes the approach viable for our use case.
 
+Needless to say, this approach is not without its drawbacks. The data is stored in memory, which means that it is not persistent. If the database crashes or the server restarts, the data is lost. However, for running tests, this is not a problem. The data is recreated from the template database each time a new database is created.
+
 ### Using Docker container with a memory disk
 
 The approach we settled on was to use a Docker container with a memory disk. Here is how you can set it up:
