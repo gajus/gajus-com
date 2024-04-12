@@ -20,6 +20,14 @@ const anchorLink = css({
   padding: '8px',
 });
 
+const footerLink = css({
+  _hover: {
+    boxShadow: '0 2px 0 #0200FF',
+    transition: 'box-shadow 200ms ease 0s',
+  },
+  color: 'action-100',
+});
+
 const mdxComponents: MDXComponents = {
   a: ({ children, ...props }) => {
     if ('ref' in props) {
@@ -215,6 +223,40 @@ export default async ({ params: { blogPostSlug } }: Props) => {
       </div>
 
       <BlogPostingJsonLd blogPostHead={blogPostHead} />
+
+      <ul
+        className={css({
+          display: 'flex',
+          gap: '16px',
+          marginY: '32px',
+          padding: '16px',
+        })}
+      >
+        <li>
+          <Link
+            className={footerLink}
+            href="https://gajus.com/"
+          >
+            ⬅︎ Back to Blog
+          </Link>
+        </li>
+        <li>
+          <Link
+            className={footerLink}
+            href="https://gajus.substack.com/subscribe"
+          >
+            Newsletter
+          </Link>
+        </li>
+        <li>
+          <Link
+            className={footerLink}
+            href="https://github.com/gajus/gajus-com/issues"
+          >
+            Report an issue
+          </Link>
+        </li>
+      </ul>
     </SiteLayout>
   );
 };
