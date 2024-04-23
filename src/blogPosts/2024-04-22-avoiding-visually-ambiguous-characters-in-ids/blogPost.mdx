@@ -102,3 +102,21 @@ As my preference is readability, this is the character set that I use for genera
 ## Further considerations: phonetic similarity
 
 In some cases, you might also want to avoid characters that sound similar when spoken. For example, `b` and `p` can sound similar when spoken out loud. This can be especially important in situations where IDs are communicated verbally.
+
+## Prior art
+
+### Base32
+
+[Base32](https://www.crockford.com/base32.html)
+
+> This takes the approach of allowing ambiguous characters by decoding them to the same value, and also considers the problem of accidental obscenities.
+
+- https://news.ycombinator.com/item?id=40127547
+
+### Open Location Code
+
+[Open Location Code](https://github.com/google/open-location-code)
+
+> A character set I like to use when I need something like this is the one used by Open Location Code, which is 23456789CFGHJMPQRVWX. It was apparently chosen not only to avoid visually ambiguous characters, but also to [avoid spelling words in common languages](https://github.com/google/open-location-code/wiki/Evaluation-of-Location-Encoding-Systems#open-location-code). It does however include both 6 and G, as well as 9 and Q.
+
+- https://lobste.rs/s/kyuc6h/understanding_avoiding_visually#c_i81w4f
