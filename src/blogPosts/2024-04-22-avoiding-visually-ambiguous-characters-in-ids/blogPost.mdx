@@ -67,6 +67,14 @@ However, as the number of members in the set increases, the number of possible I
 
 Therefore, the real question is whether what's preferable is a shorter ID with a higher chance of visual ambiguity or a longer ID with a lower chance of visual ambiguity.
 
+### Case sensitivity and third party systems
+
+As pointed out in a Hacker News comment ^[https://news.ycombinator.com/item?id=40128871], if you use both upper and lower case, you are likely to eventually be surprised by some third party system or protocol that is case insensitive.
+
+> I even found a commercial system which allowed users to choose IDs with case sensitivity (iD and id being distinct) but if you query it for one which does not exist they do case insensitive matching and return the wrong data.
+> 
+> When I reported this bug they said it was for convenience!
+
 ## Visually unambiguous dictionary
 
 As my preference is readability, this is the character set that I use for generating IDs in my projects:
