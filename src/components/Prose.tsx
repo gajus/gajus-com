@@ -175,7 +175,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
             paddingInline: '4px',
           },
         },
-        lineHeight: '2',
+        lineHeight: '1.8',
       })}
     >
       {children}
