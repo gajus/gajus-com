@@ -45,6 +45,10 @@ export const tags: Record<string, Tag> = {
     name: 'PostgreSQL',
     slug: 'postgresql',
   },
+  product: {
+    name: 'Product',
+    slug: 'product',
+  },
   slonik: {
     name: 'Slonik',
     slug: 'slonik',

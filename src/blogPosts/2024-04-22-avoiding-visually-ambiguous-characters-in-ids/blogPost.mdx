@@ -1,0 +1,104 @@
+---
+description: Designing a dictionary of visually unambiguous characters for IDs.
+guid: 81835e07-7884-4f4d-a826-9915e3cb9db9
+publishedAt: 2024-04-22 16:59:17
+tags: [product]
+title: Understanding and avoiding visually ambiguous characters in IDs
+---
+
+It is not uncommon that I need to write down or communicate IDs when interacting with systems, e.g. reporting a bug, entering a discount code, or tracking a package. It is frustrating when the experience is marred by an easy mistake to avoid - visually ambiguous characters.
+
+## What are visually ambiguous characters?
+
+* `O` / `0` - The letter `O` and the number `0` can look very similar, especially in fonts where the number zero isn’t slashed or dotted.
+* `I` / `l` / `1` - The letter `I` (uppercase `i`), lowercase `l` (`L`), and the number `1` can be indistinguishable in many types of print.
+* `5` / `S` - In some fonts, the number `5` and the letter `S` can appear quite similar.
+* `2` / `Z` - These can also be confused with each other, particularly in handwritten forms.
+* `8` / `B` - These characters might be mixed up when poorly written or in certain stylized fonts.
+* `6` / `G` - These characters can be confused in some fonts.
+* `9` / `q` / `g` - These characters can be confused in some fonts.
+
+## Why are visually ambiguous characters a problem?
+
+They cause confusion and errors in data entry, especially when the characters are handwritten or when the font is not clear. For example, if a user is trying to enter a code that contains the letter 'O' and the number '0', they might not be able to tell which character is which. This leads to frustrating user experiences.
+
+A few examples using different system fonts:
+
+<ul>
+  <li><span style={{fontFamily: 'arial'}}>9qg6G8B2Z5SIl10O</span> (ariel)</li>
+  <li><span style={{fontFamily: 'helvetica'}}>9qg6G8B2Z5SIl10O</span> (helvetica)</li>
+  <li><span style={{fontFamily: 'courier'}}>9qg6G8B2Z5SIl10O</span> (courier)</li>
+  <li><span style={{fontFamily: 'times'}}>9qg6G8B2Z5SIl10O</span> (times)</li>
+  <li><span style={{fontFamily: 'verdana'}}>9qg6G8B2Z5SIl10O</span> (verdana)</li>
+  <li><span style={{fontFamily: 'georgia'}}>9qg6G8B2Z5SIl10O</span> (georgia)</li>
+  <li><span style={{fontFamily: 'tahoma'}}>9qg6G8B2Z5SIl10O</span> (tahoma)</li>
+  <li><span style={{fontFamily: 'impact'}}>9qg6G8B2Z5SIl10O</span> (impact)</li>
+  <li><span style={{fontFamily: 'comic sans ms'}}>9qg6G8B2Z5SIl10O</span> (comic sans)</li>
+</ul>
+
+While some combinations are not difficult to distinguish in computer fonts, they can be much harder to distinguish in handwritten forms, e.g. try writing `9qg` in your own handwriting.
+
+## When it matters?
+
+Any time that the ID might need to be communicated verbally or written down, e.g.
+
+* Customer support
+* Discount codes
+* Tracking codes
+* Error IDs
+* Product IDs
+* etc.
+
+## Deciding between case sensitivity
+
+You may also consider whether your IDs should be case-sensitive or not. Is `abc` the same as `ABC`?
+
+Assuming that you are going with case sensitivity, you have 53 characters to choose from (adjusted for visually ambiguous characters). On the other hand, if you decide to make your IDs case-insensitive, you have only 23 characters to choose from.
+
+Assuming an ID length of 5 characters, you have the following number of possible IDs:
+
+* Case-sensitive: 53^5 = 418,195,493
+* Case-insensitive: 23^5 = 6,436,343
+
+However, as the number of members in the set increases, the number of possible IDs increases exponentially.
+
+* Case-sensitive: 53^5 = 62,259,690,411,360
+* Case-insensitive: 23^8 = 78,310,985,281
+
+Therefore, the real question is whether what's preferable is a shorter ID with a higher chance of visual ambiguity or a longer ID with a lower chance of visual ambiguity.
+
+## Visually unambiguous dictionary
+
+As such, this is the character set that I use for generating IDs in my projects:
+
+```json
+[
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "h",
+  "i",
+  "j",
+  "k",
+  "m",
+  "n",
+  "o",
+  "p",
+  "r",
+  "s",
+  "t",
+  "w",
+  "x",
+  "y",
+  "3",
+  "4",
+  "7"
+]
+```
+
+## Further considerations: phonetic similarity
+
+In some cases, you might also want to avoid characters that sound similar when spoken. For example, `b` and `p` can sound similar when spoken out loud. This can be especially important in situations where IDs are communicated verbally.

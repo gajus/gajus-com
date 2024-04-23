@@ -147,7 +147,7 @@ export default async ({ params: { blogPostSlug } }: Props) => {
           className={css({
             fontSize: 'x6',
             fontWeight: '700',
-            lineHeight: '1.5em',
+            lineHeight: '1.3em',
             marginBlockEnd: '0.5em',
             smDown: {
               fontSize: 'x5',
