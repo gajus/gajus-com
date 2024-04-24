@@ -16,7 +16,7 @@ OpenAI [documentation](https://platform.openai.com/docs/guides/fine-tuning) sugg
 * Token savings due to shorter prompts
 * Lower latency requests
 
-I wanted to validate to what extent is fine-tuning OpenAI models worth it.
+I wanted to validate to what extent fine-tuning OpenAI models is worth it.
 
 ## Process
 
@@ -83,7 +83,7 @@ Then I used ChatGPT 4 to generate random inputs and expected outputs, which I th
 
 I used 200 messages in the learning sample (somewhere between 50 and 100 is enough apparently ^[https://platform.openai.com/docs/guides/fine-tuning/example-count-recommendations]).
 
-Fine-tuning took about 20 minutes and didn't cost more than USD 5.
+Fine-tuning took about 20 minutes and cost no more than USD 5.
 
 ## Test
 
@@ -106,7 +106,7 @@ it('extracts mentions of geographical locations (city with inferred country)', a
 });
 ```
 
-Needless to say, these edge cases were not present in the training dataset.
+It is important to note that these edge cases were not present in the training dataset.
 
 I used this to quickly sanity check the accuracy of the fine-tuned model vs the non-tuned model. It was also helpful to write out the test cases by hand as it helped me to think through the problem and understand the edge cases.
 
@@ -157,9 +157,9 @@ That's a win.
 
 ### Training dataset `system` prompt does not need to reflect the original prompt
 
-When I started reading about fine-tuning, the thing that threw me off is that a lot of the examples insisted that _the training prompt should reflect how the model is going to be used_.
+When I started reading about fine-tuning, what threw me off was that many examples insisted that _the training prompt should reflect how the model is going to be used_.
 
-In retrospect, I misunderstood this as "the training dataset should use the same prompt as the system prompt that we are trying to optimize", which in my case was the prompt that I used to build the training dataset.
+In retrospect, I misunderstood this to mean 'the training dataset should use the same prompt as the system prompt that we are trying to optimize,' which in my case was the prompt used to build the training dataset.
 
 If you refer back to the [process](#process), what happened was that I built a prompt that was already able to produce the desired output. It was a long prompt, but it was able to produce the desired output. I then used that very prompt to create a dataset for fine-tuning the module. The problem is that I also included that very prompt as the system prompt in the training dataset. The fine-tuned model worked fine, but it was expecting the original system prompt, which largely defeated the intent (reducing token usage).
 
@@ -203,9 +203,9 @@ CREATE TABLE <namespace>_openai_chat_completion (
 CREATE UNIQUE INDEX openai_chat_completion_user_prompt_idx ON <namespace>_openai_chat_completion(user_prompt citext_ops);
 ```
 
-Then record every exchange in the database.
+Then, record every exchange in the database.
 
-Then over time you want manually review all entries in the table and mark `included` those that cover various edge cases. This will allow you to iterate over various edge cases, improve model, and over time keep adding new edge cases to the training sample.
+Then, over time, you will want to manually review all entries in the table and mark as `included` those that cover various edge cases. This will allow you to iterate over various edge cases, improve model, and over time keep adding new edge cases to the training sample.
 
 This approached felt far more productive than my initial approach of mucking with JSON files.
 
