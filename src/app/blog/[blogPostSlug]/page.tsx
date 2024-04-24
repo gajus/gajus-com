@@ -265,7 +265,15 @@ export default async ({ params: { blogPostSlug } }: Props) => {
             className={footerLink}
             href="https://gajus.substack.com/subscribe"
           >
-            Newsletter
+            My Newsletter
+          </Link>
+        </li>
+        <li>
+          <Link
+            className={footerLink}
+            href="https://twitter.com/kuizinas"
+          >
+            My Twitter
           </Link>
         </li>
       </ul>
