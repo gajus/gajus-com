@@ -109,6 +109,11 @@ export const generateMetadata = async ({
     keywords: blogPostHead.tags.map((tag) => tag.name),
     openGraph: {
       description: blogPostHead.description,
+      images: [
+        {
+          url: `https://gajus.com/blog/${blogPostHead.slug}/image`,
+        },
+      ],
       publishedTime: blogPostHead.publishedAt.toISOString(),
       title: blogPostHead.title,
       type: 'article',
