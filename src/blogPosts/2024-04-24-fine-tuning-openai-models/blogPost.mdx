@@ -1,6 +1,6 @@
 ---
 description: >-
-  Run-through of how to train OpenAI models with a custom datasets, and a summary of what to expect in terms of accuracy, speed, and cost.
+  Run-through of how to train OpenAI models with a custom data sets, and a summary of what to expect in terms of accuracy, speed, and cost.
 guid: 0c24ab4d-64e5-458f-bef5-1b36c4524a99
 publishedAt: 2024-04-24 09:42:10
 tags: [engineering]
@@ -22,7 +22,7 @@ I wanted to validate to what extent is fine-tuning OpenAI models worth it.
 
 The general idea is very simple:
 
-1. Prepare training data that describes system message, user message and expected assistant respose.
+1. Prepare training data that describes system message, user message and expected assistant response.
     1. I used ChatGPT 4 to generate random inputs.
     2. I then wrote a prompt that produces the expected output when using `gpt-4-turbo`.
     3. I then used the prompt to generate a training dataset.
@@ -90,7 +90,7 @@ Fine-tuning took about 20 minutes and didn't cost more than USD 5.
 I then built a test suite that would cover various edge cases and compared the results of the fine-tuned model with the non-tuned model.
 
 ```ts
-it('extracts mentions of geogrpahical locations (city with inferred country)', async () => {
+it('extracts mentions of geographical locations (city with inferred country)', async () => {
   const searchAttributes = await extractSearchAttributes(
     'graphic designer in New York',
   );
@@ -161,7 +161,7 @@ When I started reading about fine-tuning, the thing that threw me off is that a 
 
 In retrospect, I misunderstood this as "the training dataset should use the same prompt as the system prompt that we are trying to optimize", which in my case was the prompt that I used to build the training dataset.
 
-If you refer back to the [process](#process), what happened was that I built a prompt that was already able to produce the desired output. It was a long prompt, but it was able to produce the desired output. I then used that very prompt to create a dataset for fine-tuning the module. The problem is that I also included that very prompt as the system prompt in the training dataset. The fine-tuned model worked fine, but it was expecting the origianl system prompt, which largely defeated the intent (reducing token usage).
+If you refer back to the [process](#process), what happened was that I built a prompt that was already able to produce the desired output. It was a long prompt, but it was able to produce the desired output. I then used that very prompt to create a dataset for fine-tuning the module. The problem is that I also included that very prompt as the system prompt in the training dataset. The fine-tuned model worked fine, but it was expecting the original system prompt, which largely defeated the intent (reducing token usage).
 
 Anyway, the learning here is that it does not matter what the prompt was when you were preparing the training dataset. The only thing that matters is how you want to use the model in the future, i.e. my training data should have described a short prompt that would trigger the fine-tuned model to produce the desired output, e.g.
 
@@ -207,7 +207,7 @@ Then record every exchange in the database.
 
 Then over time you want manually review all entries in the table and mark `included` those that cover various edge cases. This will allow you to iterate over various edge cases, improve model, and over time keep adding new edge cases to the training sample.
 
-This approached felt far more productive than my intial approach of mucking with JSON files.
+This approached felt far more productive than my initial approach of mucking with JSON files.
 
 ## Conclusion
 
