@@ -229,6 +229,21 @@ export default async ({ params: { blogPostSlug } }: Props) => {
 
       <BlogPostingJsonLd blogPostHead={blogPostHead} />
 
+      <div
+        className={css({
+          textAlign: 'center',
+        })}
+      >
+        Spotted a mistake?{' '}
+        <Link
+          className={footerLink}
+          href={`https://github.com/gajus/gajus-com/blob/main/src/blogPosts/${blogPostHead.publishedAt.toISOString().slice(0, 10)}-${blogPostHead.slug}/blogPost.mdx`}
+          target="_blank"
+        >
+          Edit article
+        </Link>
+      </div>
+
       <ul
         className={css({
           display: 'flex',
@@ -251,14 +266,6 @@ export default async ({ params: { blogPostSlug } }: Props) => {
             href="https://gajus.substack.com/subscribe"
           >
             Newsletter
-          </Link>
-        </li>
-        <li>
-          <Link
-            className={footerLink}
-            href="https://github.com/gajus/gajus-com/issues"
-          >
-            Report an issue
           </Link>
         </li>
       </ul>
