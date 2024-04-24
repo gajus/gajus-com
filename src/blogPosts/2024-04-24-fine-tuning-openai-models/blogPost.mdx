@@ -116,7 +116,7 @@ I used this to quickly sanity check the accuracy of the fine-tuned model vs the 
 
 The fine-tuned model crushed all the tests.
 
-After fine-tunning, `gpt-3.5-turbo` model performed just as a good as `gpt-4-turbo`.
+After fine-tuning, `gpt-3.5-turbo` model performed just as a good as `gpt-4-turbo`.
 
 This was a win.
 
@@ -126,7 +126,7 @@ The fine-tuned model takes anywhere from 40% to 70% less time to respond.
 
 It varies a lot, but it is consistently faster than the non-tuned model.
 
-However, it still takes anywhere from 300ms to 500ms to produce a response. In contrast, we get 100-200ms with [Groq](https://groq.com/) without fine-tunning.
+However, it still takes anywhere from 300ms to 500ms to produce a response. In contrast, we get 100-200ms with [Groq](https://groq.com/) without fine-tuning.
 
 ### Cost
 
@@ -157,11 +157,11 @@ That's a win.
 
 ### Training dataset `system` prompt does not need to reflect the original prompt
 
-When I started reading about fine-tunning, the thing that threw me off is that a lot of the examples insisted that _the training prompt should reflect how the model is going to be used_.
+When I started reading about fine-tuning, the thing that threw me off is that a lot of the examples insisted that _the training prompt should reflect how the model is going to be used_.
 
 In retrospect, I misunderstood this as "the training dataset should use the same prompt as the system prompt that we are trying to optimize", which in my case was the prompt that I used to build the training dataset.
 
-If you refer back to the [process](#process), what happened was that I built a prompt that was already able to produce the desired output. It was a long prompt, but it was able to produce the desired output. I then used that very prompt to create a dataset for fine-tunning the module. The problem is that I also included that very prompt as the system prompt in the training dataset. The fine-tuned model worked fine, but it was expecting the origianl system prompt, which largely defeated the intent (reducing token usage).
+If you refer back to the [process](#process), what happened was that I built a prompt that was already able to produce the desired output. It was a long prompt, but it was able to produce the desired output. I then used that very prompt to create a dataset for fine-tuning the module. The problem is that I also included that very prompt as the system prompt in the training dataset. The fine-tuned model worked fine, but it was expecting the origianl system prompt, which largely defeated the intent (reducing token usage).
 
 Anyway, the learning here is that it does not matter what the prompt was when you were preparing the training dataset. The only thing that matters is how you want to use the model in the future, i.e. my training data should have described a short prompt that would trigger the fine-tuned model to produce the desired output, e.g.
 
@@ -211,6 +211,6 @@ This approached felt far more productive than my intial approach of mucking with
 
 ## Conclusion
 
-If you are optimizing for speed, fine-tunning OpenAI models is going to be an improvement. However, it is not going to be [the fastest option out there](https://thefastest.ai/).
+If you are optimizing for speed, fine-tuning OpenAI models is going to be an improvement. However, it is not going to be [the fastest option out there](https://thefastest.ai/).
 
-If you are optimizing for cost or accuracy, fine-tunning OpenAI models is going to be definitely worth it.
+If you are optimizing for cost or accuracy, fine-tuning OpenAI models is going to be definitely worth it.
