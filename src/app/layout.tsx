@@ -34,7 +34,7 @@ export default async ({ children }: { readonly children: React.ReactNode }) => {
         {children}
 
         <Suspense>
-          <GoogleAnalytics measurementId="G-11DC5N6W9F" />
+          <GoogleAnalytics measurementId="G-2E1DK386NC" />
         </Suspense>
       </body>
     </html>
