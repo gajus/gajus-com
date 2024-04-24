@@ -1,4 +1,4 @@
-import { getAllBlogPostHeads } from '@/routines/getAllBlogPostHeads';
+import { getAllBlogPostHeads } from '#app/routines/getAllBlogPostHeads';
 import Rss from 'rss';
 
 const SITE_URL = 'https://gajus.com';

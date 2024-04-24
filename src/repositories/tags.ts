@@ -1,4 +1,4 @@
-import { type Tag } from '@/zodSchemas/TagZodSchema';
+import { type Tag } from '#app/zodSchemas/TagZodSchema';
 
 export const tags: Record<string, Tag> = {
   batching: {

@@ -1,5 +1,5 @@
-import { Link } from '@/components/Link';
-import { css } from '@/styles';
+import { Link } from '#app/components/Link';
+import { css } from '#app/styles';
 
 const footerLink = css({
   _hover: {

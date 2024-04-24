@@ -1,4 +1,4 @@
-import { css } from '@/styles';
+import { css } from '#app/styles';
 import { type PropsWithChildren } from 'react';
 
 export const Prose = ({ children }: PropsWithChildren) => {

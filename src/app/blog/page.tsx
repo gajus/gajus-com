@@ -1,8 +1,8 @@
 import { BlogPostList } from './BlogPostList';
-import { Link } from '@/components/Link';
-import { SiteLayout } from '@/components/SiteLayout';
-import { getAllBlogPostHeads } from '@/routines/getAllBlogPostHeads';
-import { css } from '@/styles';
+import { Link } from '#app/components/Link';
+import { SiteLayout } from '#app/components/SiteLayout';
+import { getAllBlogPostHeads } from '#app/routines/getAllBlogPostHeads';
+import { css } from '#app/styles';
 import { type Metadata } from 'next';
 
 const footerLink = css({

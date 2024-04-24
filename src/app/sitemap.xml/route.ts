@@ -1,7 +1,7 @@
 // cspell:ignore urlset lastmod
 
-import { getAllBlogPostHeads } from '@/routines/getAllBlogPostHeads';
-import { stringifyXml } from '@/utilities/stringifyXml';
+import { getAllBlogPostHeads } from '#app/routines/getAllBlogPostHeads';
+import { stringifyXml } from '#app/utilities/stringifyXml';
 
 export const dynamic = 'force-dynamic';
 

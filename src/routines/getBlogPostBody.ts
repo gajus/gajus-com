@@ -1,4 +1,4 @@
-import { extractSlugFromBlogPostId } from '@/utilities/extractSlugFromBlogPostId';
+import { extractSlugFromBlogPostId } from '#app/utilities/extractSlugFromBlogPostId';
 import { allPosts } from 'contentlayer/generated';
 
 export const getBlogPostBody = (slug: string) => {

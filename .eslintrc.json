@@ -21,18 +21,18 @@
             "importNames": [
               "test"
             ],
-            "message": "Use @/e2e/test.",
+            "message": "Use #app/e2e/test.",
             "name": "@playwright/test"
           },
           {
             "importNames": [
               "sql"
             ],
-            "message": "Use @/routines/connectToPostgres.",
+            "message": "Use #app/routines/connectToPostgres.",
             "name": "slonik"
           },
           {
-            "message": "Use @/components/Link.",
+            "message": "Use #app/components/Link.",
             "name": "next/link"
           }
         ]

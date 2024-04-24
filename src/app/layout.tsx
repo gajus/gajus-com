@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-unassigned-import
 import './globals.css';
-import { GoogleAnalytics } from '@/components/GoogleAnalytics';
+import { GoogleAnalytics } from '#app/components/GoogleAnalytics';
 import { type Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Suspense } from 'react';

@@ -1,6 +1,6 @@
-import { Link } from '@/components/Link';
-import { css } from '@/styles';
-import { type BlogPostHead } from '@/zodSchemas/BlogPostHeadZodSchema';
+import { Link } from '#app/components/Link';
+import { css } from '#app/styles';
+import { type BlogPostHead } from '#app/zodSchemas/BlogPostHeadZodSchema';
 
 export const BlogPostList = ({
   blogPostHeads,

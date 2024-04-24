@@ -1,5 +1,5 @@
 import { JsonLd } from './JsonLd';
-import { type BlogPostHead } from '@/zodSchemas/BlogPostHeadZodSchema';
+import { type BlogPostHead } from '#app/zodSchemas/BlogPostHeadZodSchema';
 import { type BlogPosting, type WithContext } from 'schema-dts';
 
 export const BlogPostingJsonLd = ({

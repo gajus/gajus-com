@@ -1,9 +1,9 @@
 import { getTag } from './getTag';
-import { extractSlugFromBlogPostId } from '@/utilities/extractSlugFromBlogPostId';
+import { extractSlugFromBlogPostId } from '#app/utilities/extractSlugFromBlogPostId';
 import {
   type BlogPostHead,
   BlogPostHeadZodSchema,
-} from '@/zodSchemas/BlogPostHeadZodSchema';
+} from '#app/zodSchemas/BlogPostHeadZodSchema';
 import { allPosts } from 'contentlayer/generated';
 import { cache } from 'react';
 
