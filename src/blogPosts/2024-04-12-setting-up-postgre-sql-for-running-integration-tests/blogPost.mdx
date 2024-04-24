@@ -40,7 +40,7 @@ test('calculates total basket value', async () => {
 });
 ```
 
-The transaction approach works well for simple cases (e.g., testing a single function), but it quickly becomes a problem when dealing with tests that _test integration_ between multiple components. Due to connection pooling, nested transactions, and other factroes, the necessary work to make the transaction approach work would have meant that we are not replicating the real-world behavior of our application, i.e. it would not provide the confidence we need.
+The transaction approach works well for simple cases (e.g., testing a single function), but it quickly becomes a problem when dealing with tests that _test integration_ between multiple components. Due to connection pooling, nested transactions, and other factors, the necessary work to make the transaction approach work would have meant that we are not replicating the real-world behavior of our application, i.e. it would not provide the confidence we need.
 
 > [!NOTE]
 > For consistency, we also want to avoid mixing testing approaches. Even though using transactions would suffice for some tests, we want to have a consistent approach across all tests.
@@ -74,7 +74,7 @@ After trying various approaches, we settled on combining two approaches: [_templ
 
 ### Template Databases
 
-A [template databases](https://www.postgresql.org/docs/current/manage-ag-templatedbs.html) is a database that serves as a template for creating new databases. When you create a new database from a template database, the new database has the same schema as the template database. The steps to create a new database from a template database are as follows:
+A [template database](https://www.postgresql.org/docs/current/manage-ag-templatedbs.html) is a database that serves as a template for creating new databases. When you create a new database from a template database, the new database has the same schema as the template database. The steps to create a new database from a template database are as follows:
 
 1. Create a template database (`ALTER DATABASE <database_name> is_template=true;`)
 2. Create a new database from the template database (`CREATE DATABASE <new_database_name> TEMPLATE <template_database_name>;`)
