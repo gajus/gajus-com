@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-unassigned-import
 import './globals.css';
 import { GoogleAnalytics } from '#app/components/GoogleAnalytics';
-import { type Metadata } from 'next';
+import { type Metadata, type Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { Suspense } from 'react';
 
@@ -20,11 +20,12 @@ export const metadata: Metadata = {
   ],
   metadataBase: new URL('https://gajus.com'),
   title: 'Gajus',
-  viewport: {
-    initialScale: 1,
-    maximumScale: 1,
-    width: 'device-width',
-  },
+};
+
+export const viewport: Viewport = {
+  initialScale: 1,
+  maximumScale: 1,
+  width: 'device-width',
 };
 
 export default async ({ children }: { readonly children: React.ReactNode }) => {
