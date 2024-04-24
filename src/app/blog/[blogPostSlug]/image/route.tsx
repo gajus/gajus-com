@@ -19,6 +19,7 @@ export const GET = async (
           alignItems: 'center',
           background: 'white',
           display: 'flex',
+          fontFamily: 'Roboto',
           height: '600px',
           justifyContent: 'center',
           textAlign: 'center',
@@ -38,6 +39,7 @@ export const GET = async (
             style={{
               display: 'flex',
               fontSize: '48px',
+              fontWeight: '700',
               justifyContent: 'center',
               padding: '0 48px',
               textAlign: 'center',
@@ -58,6 +60,25 @@ export const GET = async (
       </div>
     ),
     {
+      // TODO figure out how to load the font from the file system; the usual way does not work; need Vercel-specific solution
+      fonts: [
+        {
+          data: await (
+            await fetch('https://gajus.com/fonts/Roboto/Roboto-Regular.ttf')
+          ).arrayBuffer(),
+          name: 'Roboto',
+          style: 'normal',
+          weight: 400,
+        },
+        {
+          data: await (
+            await fetch('https://gajus.com/fonts/Roboto/Roboto-Bold.ttf')
+          ).arrayBuffer(),
+          name: 'Roboto',
+          style: 'normal',
+          weight: 700,
+        },
+      ],
       height: 600,
       width: 1_200,
     },

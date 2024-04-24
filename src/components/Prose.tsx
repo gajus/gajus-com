@@ -60,6 +60,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
             marginY: '32px',
             overflowX: 'scroll',
             paddingY: '16px',
+            whiteSpace: 'pre-wrap',
           },
           '& [data-highlighted-chars]': {
             background: 'rgb(116, 207, 136, 0.2)',
@@ -69,6 +70,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
             borderLeft: '4px solid #74cf74',
           },
           '& [data-line]': {
+            minHeight: '24px',
             paddingX: '16px',
           },
           '& [data-rehype-pretty-code-caption]': {
@@ -107,6 +109,9 @@ export const Prose = ({ children }: PropsWithChildren) => {
           display: 'inline-block',
           fontWeight: '500',
           padding: '4px',
+        },
+        '& ol > li': {
+          listStyle: 'decimal',
         },
         '& p': {
           overflowWrap: 'break-word',
@@ -148,17 +153,19 @@ export const Prose = ({ children }: PropsWithChildren) => {
           borderCollapse: 'collapse',
           marginX: '16px',
         },
+        '& ul > li': {
+          listStyle: 'disc',
+        },
         '& ul, & ol': {
           '& > li': {
             '&::marker': {
               color: '#444',
             },
-            listStyle: 'disc',
             my: '8px',
           },
           display: 'block',
+          marginLeft: '32px',
           marginY: '16px',
-          paddingLeft: '32px',
         },
         '& ul, & ol, & p, & li': {
           '& a': {
