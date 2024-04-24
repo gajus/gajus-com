@@ -54,7 +54,7 @@ export const GET = async (
               justifyContent: 'center',
             }}
           >
-            Gajus Blog
+            Gajus blog
           </div>
         </div>
       </div>
