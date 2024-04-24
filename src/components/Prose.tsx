@@ -5,6 +5,11 @@ export const Prose = ({ children }: PropsWithChildren) => {
   return (
     <div
       className={css({
+        '& .footnotes': {
+          color: '#666',
+          fontSize: '0.8em',
+          marginBlockStart: '32px',
+        },
         '& .note-block': {
           _before: {
             color: '#666',
@@ -57,7 +62,7 @@ export const Prose = ({ children }: PropsWithChildren) => {
             borderRadius: '8px',
             fontSize: '18px',
             lineHeight: '24px',
-            marginY: '32px',
+            marginY: '24px',
             overflowX: 'scroll',
             paddingY: '16px',
             whiteSpace: 'pre-wrap',

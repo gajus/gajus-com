@@ -23,8 +23,11 @@ I wanted to validate to what extent is fine-tuning OpenAI models worth it.
 The general idea is very simple:
 
 1. Prepare training data that describes system message, user message and expected assistant respose.
+    1. I used ChatGPT 4 to generate random inputs.
+    2. I then wrote a prompt that produces the expected output when using `gpt-4-turbo`.
+    3. I then used the prompt to generate a training dataset.
 2. Upload the data to OpenAI https://platform.openai.com/finetune/ and start the fine-tuning process.
-  * I used `gpt-3.5-turbo-0125` as the base model for this test.
+    * I used `gpt-3.5-turbo-0125` as the base model for this test.
 3. Run your future prompts using the new model ID that you are provided.
 
 The prompt I used was:
@@ -51,6 +54,9 @@ Expected Output:
 }
 ```
 
+> [!NOTE]
+> The prompt is simplified for the sake of this example. In reality, the prompt was trying to extract different types of entities from the user input, and provided many more examples.
+
 Then I used ChatGPT 4 to generate random inputs and expected outputs, which I then formatted as training data:
 
 ```json
@@ -65,7 +71,7 @@ Then I used ChatGPT 4 to generate random inputs and expected outputs, which I th
       "role": "user"
     },
     {
-      "content": "{\"city\":\"New York\",\"country\":\"United States\"}",
+      "content": "{\"locations\":[{\"city\":\"New York\",\"country\":\"United States\"}]}",
       "role": "assistant"
     }
   ]
@@ -73,9 +79,9 @@ Then I used ChatGPT 4 to generate random inputs and expected outputs, which I th
 ```
 
 > [!NOTE]
-> This turned out to be a mistake. Refer to the "Gotchas" section for more information.
+> This turned out to be a mistake. Refer to the [Gotchas](#gotchas) section for more information.
 
-I used 200 messages in the learning sample (somewhere between 50 and 100 is enough apparently).
+I used 200 messages in the learning sample (somewhere between 50 and 100 is enough apparently ^[https://platform.openai.com/docs/guides/fine-tuning/example-count-recommendations]).
 
 Fine-tuning took about 20 minutes and didn't cost more than USD 5.
 
@@ -83,7 +89,26 @@ Fine-tuning took about 20 minutes and didn't cost more than USD 5.
 
 I then built a test suite that would cover various edge cases and compared the results of the fine-tuned model with the non-tuned model.
 
+```ts
+it('extracts mentions of geogrpahical locations (city with inferred country)', async () => {
+  const searchAttributes = await extractSearchAttributes(
+    'graphic designer in New York',
+  );
+
+  expect(searchAttributes).toEqual({
+    locations: [
+      {
+        city: 'New York',
+        country: 'United States',
+      },
+    ],
+  });
+});
+```
+
 Needless to say, these edge cases were not present in the training dataset.
+
+I used this to quickly sanity check the accuracy of the fine-tuned model vs the non-tuned model. It was also helpful to write out the test cases by hand as it helped me to think through the problem and understand the edge cases.
 
 ## Results
 
@@ -93,6 +118,8 @@ The fine-tuned model crushed all the tests.
 
 After fine-tunning, `gpt-3.5-turbo` model performed just as a good as `gpt-4-turbo`.
 
+This was a win.
+
 ### Speed
 
 The fine-tuned model takes anywhere from 40% to 70% less time to respond.
@@ -101,7 +128,7 @@ It varies a lot, but it is consistently faster than the non-tuned model.
 
 However, it still takes anywhere from 300ms to 500ms to produce a response. In contrast, we get 100-200ms with [Groq](https://groq.com/) without fine-tunning.
 
-## Cost
+### Cost
 
 The cost of using the fine-tuned model is not the same as the cost of the `gpt-3.5-turbo` model.
 
@@ -115,14 +142,16 @@ The cost of using the fine-tuned model is not the same as the cost of the `gpt-3
 |`gpt-4-turbo`|Input|$10.00 / 1M tokens|
 |`gpt-4-turbo`|Output|$30.00 / 1M tokens|
 
-So the cost of using the fine-tuned model is about 6 times higher than the cost of using the `gpt-3.5-turbo` model and about 3 times lower than the cost of using the `gpt-4-turbo` model. However, fine-tuned model requires far fewer system prompt tokens to produce a response. Continuing with our example, using fine-tuned model my system prompt is 300 tokens long, while I need system prompt of approx. 1,500 tokens to get equivalent results with `gpt-4-turbo`.
+So the cost of using the fine-tuned model is about 6 times higher than the cost of using the `gpt-3.5-turbo` model. However, fine-tuned model requires far fewer system prompt tokens to produce a response. Continuing with our example, using fine-tuned model my system prompt is 300 tokens long, while I need system prompt of approx. 1,500 tokens to get equivalent results with `gpt-4-turbo`. (I was not able to get reliable results with `gpt-3.5-turbo` without fine-tuning.)
 
 Let's say that I need to make 10,000 invocations:
 
-* With `gpt-3.5-turbo` (fine-tuned) it would cost me USD 9 ( ((300*10,000)/1,000,000)*3 = 9 )
-* With `gpt-4-turbo` it would cost me USD 150 ( ((1,500*10,000)/1,000,000)*10 = 150 )
+* With `gpt-3.5-turbo` (fine-tuned) it would cost me USD 9 ( `((300*10,000)/1,000,000)*3 ` )
+* With `gpt-4-turbo` it would cost me USD 150 ( `((1,500*10,000)/1,000,000)*10 ` )
 
 That's a saving of %94.
+
+That's a win.
 
 ## Gotchas
 
@@ -148,7 +177,7 @@ Anyway, the learning here is that it does not matter what the prompt was when yo
       "role": "user"
     },
     {
-      "content": "{\"city\":\"New York\",\"country\":\"United States\"}",
+      "content": "{\"locations\":[{\"city\":\"New York\",\"country\":\"United States\"}]}",
       "role": "assistant"
     }
   ]
@@ -176,4 +205,12 @@ CREATE UNIQUE INDEX openai_chat_completion_user_prompt_idx ON <namespace>_openai
 
 Then record every exchange in the database.
 
-Then over time you want manually review all entries in the table and mark included those that cover various edge cases. This will allow you to iterate over various edge cases, improve model, and over time keep adding new edge cases to the training sample.
+Then over time you want manually review all entries in the table and mark `included` those that cover various edge cases. This will allow you to iterate over various edge cases, improve model, and over time keep adding new edge cases to the training sample.
+
+This approached felt far more productive than my intial approach of mucking with JSON files.
+
+## Conclusion
+
+If you are optimizing for speed, fine-tunning OpenAI models is going to be an improvement. However, it is not going to be [the fastest option out there](https://thefastest.ai/).
+
+If you are optimizing for cost or accuracy, fine-tunning OpenAI models is going to be definitely worth it.
